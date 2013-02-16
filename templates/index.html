@@ -1,0 +1,9 @@
+{% if userList %}
+    <ul>
+    {% for user in userList %}
+        <li><a href="profile/{{ user.user_id }}/">{{ user }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No users available.</p>
+{% endif %}

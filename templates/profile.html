@@ -1,5 +1,13 @@
-<h1>{{user}}</h1>
-<br/>
+{% extends "base.html" %}
+
+{% block title %}{{ user }} - Career Builder{% endblock %}
+
+
+{% block pagetitle %}{{ user }}{% endblock %}
+
+
+{% block content %}
+         
 <h3>Contact Info</h3>
 <ul>
 	{% if user.email %} <li>{{ user.email }}</li> {% endif %}
@@ -7,3 +15,5 @@
 	{% if user.phone %} <li>{{ user.phone }}</li> {% endif %}
 	{% if user.altPhone %} <li>{{ user.altPhone }} </li> {% endif %}
 </ul>
+
+ {% endblock %}

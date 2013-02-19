@@ -1,5 +1,4 @@
 # Django settings for ResumeBuilder project.
-
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -57,7 +56,7 @@ MEDIA_URL = '/Media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = '/Users/ryan/Developer/ResumeBuilder/static/'
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -78,8 +77,21 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
+# I added this
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '7nqb0+-onr_(hklhb_+!u%o(gnf284l#^a*j*zyox8gbwgenzy'
+
+# I added this
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.contrib.auth.context_processors.auth',
+    'django.contrib.messages.context_processors.messages',
+)
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (

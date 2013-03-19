@@ -1,3 +1,6 @@
+{% extends "base.html" %}
+{% block pagetitle %}Home{% endblock %}
+{% block content %}
 {% if userList %}
     <ul>
     {% for user in userList %}
@@ -7,3 +10,4 @@
 {% else %}
     <p>No users available.</p>
 {% endif %}
+{% endblock %}

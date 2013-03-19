@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results{% endblock %}
+
+
+{% block pagetitle %}Search Results for {{ query }}{% endblock %}
+
+
+{% block content %}
+
+<p>You searched for: <strong>{{ query }}</strong></p>
+
+{% if projects %}
+    <p>Found {{ projects|length }} project{{ projects|pluralize }}.</p>
+    <ul>
+        {% for p in projects %}
+        <li>{{ p.title }} - <a href="/profile/{{ p.user.firstName|lower }}-{{ p.user.lastName|lower }}/">{{ p.user.firstName }} {{p.user.lastName }}</a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No projects matched your search criteria.</p>
+{% endif %}
+{% endblock %}

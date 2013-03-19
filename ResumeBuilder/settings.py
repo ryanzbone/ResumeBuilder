@@ -91,6 +91,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
+    'django.core.context_processors.csrf',
 )
 
 # List of callables that know how to import templates from various sources.
@@ -165,3 +166,10 @@ LOGGING = {
         },
     }
 }
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'ryanzbone@gmail.com'
+EMAIL_HOST_USER_PASSWORD = 'whyhello'
+EMAIL_USE_TLS = True

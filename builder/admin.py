@@ -4,7 +4,7 @@ from builder.models import UserProfile, Project, WorkExperience, VolunteerExperi
 class ProjectInline(admin.StackedInline):
     model = Project
     extra = 0
-
+    
 class WorkExperienceInline(admin.StackedInline):
     model = WorkExperience
     extra = 1
@@ -14,6 +14,9 @@ class VolunteerExperienceInline(admin.StackedInline):
     extra = 0
 
 class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('firstName', 'lastName', 'email')
+    search_fields = ('firstName', 'lastName')
+    list_filter = ('school', 'degree')
     fieldsets = (
         (None,              {'fields': ('user', 'image', 'firstName', 'lastName')}),
         ('Contact Info',    {'fields': ('email', 'phone', 'altPhone', 'url')}),

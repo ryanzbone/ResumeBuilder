@@ -2,8 +2,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.core.mail import send_mail
-from builder.models import UserProfile, Project
-from forms import ContactForm
+from builder.models import UserProfile, Project, WorkExperience
+from builder.forms import *
 
 def index(request):
 	userList = UserProfile.objects.all()
@@ -53,3 +53,20 @@ def contact(request):
 
 def thanks(request):
 	return render_to_response('thanks.html')
+
+def work_experience_form(request):
+	if request.method == 'POST':
+		form = WorkExperienceForm(request.POST)
+		if form.is_valid():
+			cd = form.cleaned_data
+			exp = WorkExperience(jobTitle = cd['jobTitle'], startDate = cd['startDate'], 
+				endDate = cd['endDate'], description = cd['description'], supervisorName = cd['supervisorName'], 
+				supervisorEmail = cd['supervisorEmail'], location = cd['location'], user = cd['user'])
+			exp.save()
+			return HttpResponseRedirect('/')
+	else:
+		form = WorkExperienceForm()
+	return render_to_response('work_experience_form.html', {'form': form}, context_instance=RequestContext(request))
+
+
+

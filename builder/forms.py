@@ -1,4 +1,5 @@
 from django import forms
+from builder.models import UserProfile
 
 class ContactForm(forms.Form):
 	subject = forms.CharField(max_length=100)
@@ -19,4 +20,14 @@ class SignUpForm(forms.Form):
 	email = forms.EmailField()
 	username = forms.CharField()
 	password = forms.CharField()
-	
+
+class WorkExperienceForm(forms.Form):
+	user = forms.ModelChoiceField(queryset=UserProfile.objects.all())
+	jobTitle = forms.CharField()
+	startDate = forms.DateField()
+	endDate = forms.DateField(required=False)
+	description = forms.CharField(widget=forms.Textarea)
+	supervisorName = forms.CharField()
+	supervisorEmail = forms.CharField()
+	location = forms.CharField()
+

@@ -12,6 +12,7 @@ urlpatterns = patterns('builder.views',
     url(r'^search/$', 'search'),
     url(r'^contact/$', 'contact'),
     url(r'^contact/thanks/$', 'thanks'),
+    url(r'^workexperience-form/$', 'work_experience_form')
 )
 
 urlpatterns += staticfiles_urlpatterns()

@@ -46,6 +46,7 @@ class Project(models.Model):
         ordering = ['title']
 
 class WorkExperience(models.Model):
+    user = models.ForeignKey(UserProfile)
     jobTitle = models.CharField('Job title', max_length = 100)
     startDate = models.DateField('Start date', blank = True)
     endDate = models.DateField('End date', blank = True)
@@ -53,7 +54,6 @@ class WorkExperience(models.Model):
     supervisorName = models.CharField('Supervisor name', max_length = 100)
     supervisorEmail = models.EmailField('Supervisor email')
     location = models.CharField(max_length = 250)
-    user = models.ForeignKey(UserProfile)
     def __unicode__(self):
         return self.jobTitle
 
@@ -61,15 +61,15 @@ class WorkExperience(models.Model):
         ordering = ['-startDate']
 
 class VolunteerExperience(models.Model):
+    user = models.ForeignKey(UserProfile)
     organization = models.CharField(max_length = 150)
     jobTitle = models.CharField('Title', max_length = 100)
     startDate = models.DateField('Start date', blank = True)
-    endDate = models.DateField('End date', blank = True)
+    endDate = models.DateField('End date', blank = True, null=True)
     description = models.TextField('Job description')
     supervisorName = models.CharField('Supervisor name', max_length = 100)
     supervisorEmail = models.EmailField('Supervisor email')
     location = models.CharField(max_length = 250)
-    user = models.ForeignKey(UserProfile)
     def __unicode__(self):
         return u'%s - %s' % (self.jobTitle, self.organization)
 

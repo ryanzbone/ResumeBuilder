@@ -12,7 +12,9 @@ urlpatterns = patterns('builder.views',
     url(r'^search/$', 'search'),
     url(r'^contact/$', 'contact'),
     url(r'^contact/thanks/$', 'thanks'),
-    url(r'^workexperience-form/$', 'work_experience_form')
+    # url(r'^workexperience-form/$', 'work_experience_form'),
+    # url(r'^volunteerexperience-form/$', 'volunteer_experience_form'),
+    url(r'^form/experience/(?P<experienceType>[^/]+)/$', 'experience_form'),
 )
 
 urlpatterns += staticfiles_urlpatterns()

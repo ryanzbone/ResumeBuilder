@@ -1,5 +1,6 @@
 from django import forms
-from builder.models import UserProfile
+from django.forms import extras
+from builder.models import WorkExperience, VolunteerExperience, Project
 
 class ContactForm(forms.Form):
 	subject = forms.CharField(max_length=100)
@@ -21,13 +22,16 @@ class SignUpForm(forms.Form):
 	username = forms.CharField()
 	password = forms.CharField()
 
-class WorkExperienceForm(forms.Form):
-	user = forms.ModelChoiceField(queryset=UserProfile.objects.all())
-	jobTitle = forms.CharField()
-	startDate = forms.DateField()
-	endDate = forms.DateField(required=False)
-	description = forms.CharField(widget=forms.Textarea)
-	supervisorName = forms.CharField()
-	supervisorEmail = forms.CharField()
-	location = forms.CharField()
+class WorkExperienceForm(forms.ModelForm):
+	class Meta:
+		model = WorkExperience
+		# startDate = forms.DateField(widget=extras.widgets.SelectDateWidget())
+		# exclude = ('user',)
 
+class VolunteerExperienceForm(forms.ModelForm):
+	class Meta:
+		model = VolunteerExperience
+
+class ProjectForm(forms.ModelForm):
+	class Meta:
+		model = Project

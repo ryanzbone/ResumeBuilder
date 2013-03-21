@@ -16,4 +16,46 @@
 	{% if user.altPhone %} <li>{{ user.altPhone }} </li> {% endif %}
 </ul>
 
- {% endblock %}
+{% if projects %}
+<hr>
+<h3>Project{{ projects|pluralize }}</h3>
+	{% for project in projects %}
+	<h4>{% if project.projectURL %}<a href="{{ project.projectURL }}">{{ project.title }}</a>{% else %}{{ project.title }}{% endif %}</h4>{% if project.isPublic %}<i>Project is in production </i>{% endif %}{% if project.inDevelopment %}<i>Project is in development </i>{% endif %}
+	<p>{{ project.description }}</p>
+	{% endfor %}
+{% endif %}
+
+{% if workExperience %}
+<hr>
+<h3>Work Experience</h2>
+	{% for work in workExperience %}
+	<h4>{{ work }} at {{ work.location }}</h4>
+	<ul>
+		<li>{{ work.startDate }} {% if work.endDate %} to {{work.endDate}}{% endif %}</li>
+		<li>{{ work.description }}</li>
+		<li>Supervisor</li>
+		<ul>
+			<li>{{ work.supervisorName }}</li>
+			<li>{{ work.supervisorEmail }}</li>
+		</ul>
+	</ul>
+	{% endfor %}
+{% endif %}
+
+{% if volunteerExperience %}
+<hr>
+<h3> Volunteer Experience</h3>
+	{% for vol in volunteerExperience %}
+	<h4>{{ vol.jobTitle }}{% if vol.organization %} with {{ vol.organization }}{% endif %}{% if vol.location %} at {{ vol.location }}{% endif %}</h4>
+	<ul>
+		<li>{{ vol.startDate }} {% if vol.endDate %} to {{vol.endDate}}{% endif %}</li>
+		<li>{{ vol.description }}</li>
+		<ul>
+			<li>{{ vol.supervisorName }}</li>
+			<li>{{ vol.supervisorEmail }}</li>
+		</ul>
+	</ul>
+	{% endfor %}
+{% endif %}
+
+{% endblock %}

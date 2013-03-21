@@ -1,8 +1,8 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.core.mail import send_mail
-from builder.models import UserProfile, Project, WorkExperience
+from builder.models import UserProfile, Project, WorkExperience, VolunteerExperience
 from builder.forms import *
 
 def index(request):
@@ -12,9 +12,10 @@ def index(request):
 def profile(request, name):
 	name = name.rsplit("-")
 	user = UserProfile.objects.get(firstName__istartswith = name[0], lastName__istartswith = name[1])
-	# user = UserProfile.objects.get(pk = id)
-	return render(request, 'profile.html', {'user': user})
-	#return HttpResponse("User %s" % user)
+	workExperience = WorkExperience.objects.filter(user=user)
+	projects = Project.objects.filter(user=user)
+	volunteerExperience = VolunteerExperience.objects.filter(user=user)
+	return render(request, 'profile.html', locals())
 
 def search_form(request):
 	return render_to_response('search_form.html')
@@ -54,19 +55,58 @@ def contact(request):
 def thanks(request):
 	return render_to_response('thanks.html')
 
-def work_experience_form(request):
-	if request.method == 'POST':
-		form = WorkExperienceForm(request.POST)
-		if form.is_valid():
-			cd = form.cleaned_data
-			exp = WorkExperience(jobTitle = cd['jobTitle'], startDate = cd['startDate'], 
-				endDate = cd['endDate'], description = cd['description'], supervisorName = cd['supervisorName'], 
-				supervisorEmail = cd['supervisorEmail'], location = cd['location'], user = cd['user'])
-			exp.save()
-			return HttpResponseRedirect('/')
+def experience_form(request, experienceType):
+	if experienceType == 'work':
+		exp = WorkExperience( )
+		if request.method == 'POST':
+			form = WorkExperienceForm(request.POST,instance=exp )
+			if form.is_valid():
+				form.save()
+				return HttpResponseRedirect('/contact/thanks')
+		else:
+			form = WorkExperienceForm(instance=exp)
+	elif experienceType == 'volunteer':
+		exp = VolunteerExperience()
+		if request.method == 'POST':
+			form = VolunteerExperienceForm(request.POST,instance=exp)
+			if form.is_valid():
+				form.save()
+				return HttpResponseRedirect('/contact/thanks')
+		else:
+			form = VolunteerExperienceForm(instance=exp)
+	elif experienceType == 'project':
+		exp = Project()
+		if request.method == 'POST':
+			form = ProjectForm(request.POST, instance=exp)
+			if form.is_valid():
+				form.save()
+				return HttpResponseRedirect('/contact/thanks')
+		else:
+			form = ProjectForm(instance=exp)
 	else:
-		form = WorkExperienceForm()
-	return render_to_response('work_experience_form.html', {'form': form}, context_instance=RequestContext(request))
+		raise Http404
+	
+	return render(request, 'experience_form.html', locals())
 
+# def work_experience_form(request):
+# 	exp = WorkExperience( )
+# 	if request.method == 'POST':
+# 		form = WorkExperienceForm(request.POST,instance=exp )
+# 		if form.is_valid():
+# 			form.save()
+# 			return HttpResponseRedirect('/contact/thanks')
+# 	else:
+# 		form = WorkExperienceForm(instance=exp)
+# 	return render(request, 'work_experience_form.html', locals())
 
+# def volunteer_experience_form(request):
+# 	exp = VolunteerExperience()
+# 	if request.method == 'POST':
+# 		form = VolunteerExperienceForm(request.POST,instance=exp)
+# 		if form.is_valid():
+# 			form.save()
+# 			return HttpResponseRedirect('/contact/thanks')
+# 	else:
+# 		form = VolunteerExperienceForm(instance=exp)
+# 	return render(request, 'volunteer_experience_form.html', locals())
 

@@ -17,9 +17,6 @@ def profile(request, name):
 	volunteerExperience = VolunteerExperience.objects.filter(user=user)
 	return render(request, 'profile.html', locals())
 
-def search_form(request):
-	return render_to_response('search_form.html')
-
 def search(request):
 	errors = []
 	if 'q' in request.GET:
@@ -55,17 +52,17 @@ def contact(request):
 def thanks(request):
 	return render_to_response('thanks.html')
 
-def experience_form(request, experienceType):
-	if experienceType == 'work':
+def add_form(request, formType):
+	if formType == 'work':
 		exp = WorkExperience( )
 		if request.method == 'POST':
 			form = WorkExperienceForm(request.POST,instance=exp )
 			if form.is_valid():
 				form.save()
-				return HttpResponseRedirect('/contact/thanks')
+				return HttpResponseRedirect('/profile/thanks')
 		else:
 			form = WorkExperienceForm(instance=exp)
-	elif experienceType == 'volunteer':
+	elif formType == 'volunteer':
 		exp = VolunteerExperience()
 		if request.method == 'POST':
 			form = VolunteerExperienceForm(request.POST,instance=exp)
@@ -74,7 +71,7 @@ def experience_form(request, experienceType):
 				return HttpResponseRedirect('/contact/thanks')
 		else:
 			form = VolunteerExperienceForm(instance=exp)
-	elif experienceType == 'project':
+	elif formType == 'project':
 		exp = Project()
 		if request.method == 'POST':
 			form = ProjectForm(request.POST, instance=exp)
@@ -83,30 +80,10 @@ def experience_form(request, experienceType):
 				return HttpResponseRedirect('/contact/thanks')
 		else:
 			form = ProjectForm(instance=exp)
+	# elif formType == 'userprofile':
+	# 	exp = 
 	else:
 		raise Http404
 	
 	return render(request, 'experience_form.html', locals())
-
-# def work_experience_form(request):
-# 	exp = WorkExperience( )
-# 	if request.method == 'POST':
-# 		form = WorkExperienceForm(request.POST,instance=exp )
-# 		if form.is_valid():
-# 			form.save()
-# 			return HttpResponseRedirect('/contact/thanks')
-# 	else:
-# 		form = WorkExperienceForm(instance=exp)
-# 	return render(request, 'work_experience_form.html', locals())
-
-# def volunteer_experience_form(request):
-# 	exp = VolunteerExperience()
-# 	if request.method == 'POST':
-# 		form = VolunteerExperienceForm(request.POST,instance=exp)
-# 		if form.is_valid():
-# 			form.save()
-# 			return HttpResponseRedirect('/contact/thanks')
-# 	else:
-# 		form = VolunteerExperienceForm(instance=exp)
-# 	return render(request, 'volunteer_experience_form.html', locals())
 

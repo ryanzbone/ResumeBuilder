@@ -1,12 +1,9 @@
 {% extends "base.html" %}
-
 {% block title %}Project Search{% endblock %}
-
-
-{% block pagetitle %}Project Search{% endblock %}
-
 {% block content %}
-
+	<div class="page-header">
+    	<h1>Project Search</h1>
+	</div>
 	{% if errors %}
 		<ul>
 			{% for error in errors %}
@@ -14,7 +11,6 @@
 			{% endfor %}
 		</ul>
 	{% endif %}
-
 	<p>Enter a project name to search:</p>
 	<form action="" method="get">
 	    <input type="text" name="q">

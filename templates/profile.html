@@ -77,7 +77,7 @@ h4{
 		</ul>
 		{% if user.is_authenticated and isThisUser %}
 			<a href="{% url 'edit_form' 'work' work.id %}" class="btn">Edit</a>
-			</br>
+		</br></br>
 		{% endif %}
 		{% endfor %}
 	<hr>
@@ -97,6 +97,7 @@ h4{
 		</ul>
 		{% if user.is_authenticated and isThisUser %}
 			<a href="{% url 'edit_form' 'volunteer' vol.id %}" class="btn">Edit</a>
+			</br></br>
 		{% endif %}
 		{% endfor %}
 	{% endif %}

@@ -23,12 +23,13 @@ forms = {
 
 @login_required
 def add_form(request, formType):
-	exp = models[formType]()
+	exp = models[formType](user=UserProfile.objects.get(user=request.user))
 	if request.method == 'POST':
 		form = forms[formType](request.POST, instance = exp)
 		if form.is_valid():
 			form.save()
-			return HttpResponseRedirect('/contact/thanks')
+			redirect = '/profile/' + request.user.first_name.lower() + '-' + request.user.last_name.lower()
+			return HttpResponseRedirect(redirect)
 	else:
 		form = forms[formType]
 	
@@ -44,7 +45,8 @@ def edit_form(request, formType, formId):
 		form = forms[formType](request.POST, instance=formFromId)
 		if form.is_valid():
 			form.save()
-			return HttpResponseRedirect('/contact/thanks')
+			redirect = '/profile/' + request.user.first_name.lower() + '-' + request.user.last_name.lower()
+			return HttpResponseRedirect(redirect)
 	else:
 		form = forms[formType](instance=formFromId)
 
@@ -56,7 +58,7 @@ def register(request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             new_user = form.save()
-            new_profile = UserProfile(firstName=new_user.first_name, lastName=new_user.last_name, user=new_user)
+            new_profile = UserProfile(firstName=new_user.first_name, lastName=new_user.last_name, user=new_user, email=new_user.email)
             new_profile.save()
             return HttpResponseRedirect("/")
     else:

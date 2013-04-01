@@ -1,6 +1,8 @@
 {% extends "base.html" %}
-{% block title %}{{ user }} - Career Builder{% endblock %}
+{% block title %}{{ userProfile }} - Career Builder{% endblock %}
 {% block head %}
+
+
 <style type="text/css">
 h4{
     display: inline;
@@ -10,14 +12,22 @@ h4{
 
 {% block content %}
 <div class="span3">
-	<h2>{{ user }}</h2>
-	<h3>Contact Info</h3>
-	<ul>
-		{% if user.email %} <li><a href="mailto:{{ user.email }}">{{ user.email }}</a></li> {% endif %}
-		{% if user.url %} <li>{{ user.url }}</li> {% endif %}
-		{% if user.phone %} <li>{{ user.phone }}</li> {% endif %}
-		{% if user.altPhone %} <li>{{ user.altPhone }} </li> {% endif %}
-	</ul>
+	<h2>{{ userProfile }}</h2>
+	<div class="well">
+		<h3>Contact Info</h3>
+		<ul>
+			{% if userProfile.email %} <li><a href="mailto:{{ userProfile.email }}">{{ userProfile.email }}</a></li> {% endif %}
+			{% if userProfile.url %} <li><a href="{{ userProfile.url }}">{{ userProfile.url }}</a></li> {% endif %}
+			{% if userProfile.phone %} <li>{{ userProfile.phone }}</li> {% endif %}
+			{% if userProfile.altPhone %} <li>{{ userProfile.altPhone }} </li> {% endif %}
+		</ul>
+	</div>
+	{% if user.is_authenticated and isThisUser %}
+		<a href="{% url 'add_form' 'project' %}" class="btn btn-large btn-block btn-info" type="button" >+ Project</a>
+		<a href="{% url 'add_form' 'work' %}" class="btn btn-large btn-block btn-info" type="button">+ Work</a>
+		<a href="{% url 'add_form' 'volunteer' %}" class="btn btn-large btn-block btn-info" type="button">+ Volunteering</a>
+		<a href="{% url 'edit_form' 'other' userProfile.user.id %}" class="btn btn-large btn-block btn-info" type="button">+ Other Info</a>
+	{% endif %}
 </div>
 <div class="span9">
 	{% if projects %}
@@ -35,8 +45,8 @@ h4{
 				</div>
 				<ul class="thumbnails">
 					<li class="span3 pull-right">
-						<a href="#" class="thumbnail">
-							<img src="{{ project.projectImage.url }}" alt="" style="width: 300px; height: 200px;">
+						<a href="#" class="thumbnail" style="margin-top:10px">
+							<img src="{{ project.projectImage.url }}" alt="">
 						</a>
 					</li>
 				</ul>
@@ -44,13 +54,15 @@ h4{
 			{% else %}
 				<p><br/>{{ project.description }}</p>
 			{% endif %}
-
+			{% if user.is_authenticated and isThisUser %}
+				<a href="{% url 'edit_form' 'project' project.id %}" class="btn">Edit</a>
+			{% endif %}
 		</div>
 		{% endfor %}
+	<hr>
 	{% endif %}
 
 	{% if workExperience %}
-	<hr>
 	<h3>Work Experience</h2>
 		{% for work in workExperience %}
 		<h4>{{ work }} at {{ work.location }}</h4>
@@ -63,14 +75,18 @@ h4{
 				<li>{{ work.supervisorEmail }}</li>
 			</ul>
 		</ul>
+		{% if user.is_authenticated and isThisUser %}
+			<a href="{% url 'edit_form' 'work' work.id %}" class="btn">Edit</a>
+			</br>
+		{% endif %}
 		{% endfor %}
+	<hr>
 	{% endif %}
 
 	{% if volunteerExperience %}
-	<hr>
 	<h3> Volunteer Experience</h3>
 		{% for vol in volunteerExperience %}
-		<h4>{{ vol.jobTitle }}{% if vol.organization %} with {{ vol.organization }}{% endif %}{% if vol.location %} at {{ vol.location }}{% endif %}</h4>
+		<h4>{{ vol.jobTitle }}{% if vol.organization %} with {{ vol.organization }}{% endif %}{% if vol.location %} in {{ vol.location }}{% endif %}</h4>
 		<ul>
 			<li>{{ vol.startDate }} {% if vol.endDate %} to {{vol.endDate}}{% endif %}</li>
 			<li>{{ vol.description }}</li>
@@ -79,6 +95,9 @@ h4{
 				<li>{{ vol.supervisorEmail }}</li>
 			</ul>
 		</ul>
+		{% if user.is_authenticated and isThisUser %}
+			<a href="{% url 'edit_form' 'volunteer' vol.id %}" class="btn">Edit</a>
+		{% endif %}
 		{% endfor %}
 	{% endif %}
 </div>

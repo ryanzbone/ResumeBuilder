@@ -83,7 +83,7 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '7nqb0+-onr_(hklhb_+!u%o(gnf284l#^a*j*zyox8gbwgenzy'
 
-# I added this
+# I added this (later: maybe for static files?)
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',

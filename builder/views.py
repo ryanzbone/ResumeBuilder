@@ -4,18 +4,88 @@ from django.template import RequestContext
 from django.core.mail import send_mail
 from builder.models import UserProfile, Project, WorkExperience, VolunteerExperience
 from builder.forms import *
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+
+
+models = { 
+	'work': 		WorkExperience,
+	'volunteer': 	VolunteerExperience,
+	'project': 		Project,
+	'other': 		UserProfile,
+	}
+forms = {
+	'work': 		WorkExperienceForm,
+	'volunteer': 	VolunteerExperienceForm,
+	'project': 		ProjectForm,
+	'other': 		UserProfileForm,
+	}
+
+@login_required
+def add_form(request, formType):
+	exp = models[formType]()
+	if request.method == 'POST':
+		form = forms[formType](request.POST, instance = exp)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect('/contact/thanks')
+	else:
+		form = forms[formType]
+	
+	return render(request, 'experience_form.html', locals())
+
+@login_required
+def edit_form(request, formType, formId):
+	if formType == 'other':
+		formFromId = models[formType].objects.get(user=formId)
+	else:
+		formFromId = models[formType].objects.get(id=formId)
+	if request.method == 'POST':
+		form = forms[formType](request.POST, instance=formFromId)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect('/contact/thanks')
+	else:
+		form = forms[formType](instance=formFromId)
+
+	return render(request, 'experience_form.html', locals())
+
+
+def register(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            new_user = form.save()
+            new_profile = UserProfile(firstName=new_user.first_name, lastName=new_user.last_name, user=new_user)
+            new_profile.save()
+            return HttpResponseRedirect("/")
+    else:
+        form = RegistrationForm()
+    return render(request, 'registration/register.html', locals())
+
 
 def index(request):
 	userList = UserProfile.objects.all()
 	return render(request, 'index.html', {'userList': userList})
 
 def profile(request, name):
+	user = request.user
 	name = name.rsplit("-")
-	user = UserProfile.objects.get(firstName__istartswith = name[0], lastName__istartswith = name[1])
-	workExperience = WorkExperience.objects.filter(user=user)
-	projects = Project.objects.filter(user=user)
-	volunteerExperience = VolunteerExperience.objects.filter(user=user)
+	userProfile = UserProfile.objects.get(firstName__istartswith = name[0], lastName__istartswith = name[1])
+	if user.id == userProfile.user.id: 
+		isThisUser = True
+	else: 
+		isThisUser = False
+	workExperience = WorkExperience.objects.filter(user=userProfile)
+	projects = Project.objects.filter(user=userProfile)
+	volunteerExperience = VolunteerExperience.objects.filter(user=userProfile)
 	return render(request, 'profile.html', locals())
+
+@login_required
+def edit_profile(request, name):
+	edit = True
+	response = profile(request, name)
+	return response
 
 def search(request):
 	errors = []
@@ -51,39 +121,3 @@ def contact(request):
 
 def thanks(request):
 	return render_to_response('thanks.html')
-
-def add_form(request, formType):
-	if formType == 'work':
-		exp = WorkExperience( )
-		if request.method == 'POST':
-			form = WorkExperienceForm(request.POST,instance=exp )
-			if form.is_valid():
-				form.save()
-				return HttpResponseRedirect('/profile/thanks')
-		else:
-			form = WorkExperienceForm(instance=exp)
-	elif formType == 'volunteer':
-		exp = VolunteerExperience()
-		if request.method == 'POST':
-			form = VolunteerExperienceForm(request.POST,instance=exp)
-			if form.is_valid():
-				form.save()
-				return HttpResponseRedirect('/contact/thanks')
-		else:
-			form = VolunteerExperienceForm(instance=exp)
-	elif formType == 'project':
-		exp = Project()
-		if request.method == 'POST':
-			form = ProjectForm(request.POST, instance=exp)
-			if form.is_valid():
-				form.save()
-				return HttpResponseRedirect('/contact/thanks')
-		else:
-			form = ProjectForm(instance=exp)
-	# elif formType == 'userprofile':
-	# 	exp = 
-	else:
-		raise Http404
-	
-	return render(request, 'experience_form.html', locals())
-

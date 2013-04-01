@@ -8,16 +8,16 @@ from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, primary_key=True)
-    firstName = models.CharField(max_length = 50, blank = True)
-    lastName = models.CharField(max_length = 50, blank = True)
+    firstName = models.CharField('First Name', max_length = 50, blank = True)
+    lastName = models.CharField('Last Name', max_length = 50, blank = True)
     email = models.EmailField()
     url = models.URLField(blank = True)
     phone = models.CharField(max_length = 20)
-    altPhone = models.CharField(max_length = 20, blank = True)
+    altPhone = models.CharField('Alternate Phone', max_length = 20, blank = True)
     image = models.ImageField(upload_to='Images', blank = True)
     school = models.CharField(max_length = 100)
     degree = models.CharField(max_length = 100)
-    altDegree = models.CharField(max_length = 100, blank = True)
+    altDegree = models.CharField('Secondary Degree', max_length = 100, blank = True)
     altInfo = models.TextField('Other information', blank = True)
     hobbies = models.TextField(blank = True)
     clients = models.TextField(blank = True)
@@ -33,7 +33,7 @@ class UserProfile(models.Model):
 class Project(models.Model):
     user = models.ForeignKey(UserProfile)
     title = models.CharField(max_length = 250)
-    projectURL = models.URLField(blank = True)
+    projectURL = models.URLField('Project URL', blank = True)
     description = models.TextField()
     inDevelopment = models.BooleanField()
     isPublic = models.BooleanField(default = True)
@@ -48,12 +48,12 @@ class Project(models.Model):
 class WorkExperience(models.Model):
     user = models.ForeignKey(UserProfile)
     jobTitle = models.CharField('Job title', max_length = 100)
+    location = models.CharField(max_length = 250)
     startDate = models.DateField('Start date', blank = True)
     endDate = models.DateField('End date', blank = True)
     description = models.TextField('Job description')
-    supervisorName = models.CharField('Supervisor name', max_length = 100)
-    supervisorEmail = models.EmailField('Supervisor email')
-    location = models.CharField(max_length = 250)
+    supervisorName = models.CharField('Supervisor name', max_length = 100, blank = True)
+    supervisorEmail = models.EmailField('Supervisor email', blank = True)
     def __unicode__(self):
         return self.jobTitle
 

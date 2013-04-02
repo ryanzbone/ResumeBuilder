@@ -4,30 +4,30 @@
 
 
 <style type="text/css">
-h4{
-    display: inline;
-}​
+h4 { display: inline; } ​
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="span3">
-	<h2>{{ userProfile }}</h2>
-	<div class="well">
-		<h3>Contact Info</h3>
-		<ul>
-			{% if userProfile.email %} <li><a href="mailto:{{ userProfile.email }}">{{ userProfile.email }}</a></li> {% endif %}
-			{% if userProfile.url %} <li><a href="{{ userProfile.url }}">{{ userProfile.url }}</a></li> {% endif %}
-			{% if userProfile.phone %} <li>{{ userProfile.phone }}</li> {% endif %}
-			{% if userProfile.altPhone %} <li>{{ userProfile.altPhone }} </li> {% endif %}
-		</ul>
+	<div style="position:fixed">
+		<h2>{{ userProfile }}</h2>
+		<!-- <div class="well"> -->
+			<h3>Contact Info</h3>
+			<ul>
+				{% if userProfile.email %} <li><a href="mailto:{{ userProfile.email }}">{{ userProfile.email }}</a></li> {% endif %}
+				{% if userProfile.url %} <li><a href="{{ userProfile.url }}">{{ userProfile.url }}</a></li> {% endif %}
+				{% if userProfile.phone %} <li>{{ userProfile.phone }}</li> {% endif %}
+				{% if userProfile.altPhone %} <li>{{ userProfile.altPhone }} </li> {% endif %}
+			</ul>
+		<!-- </div> -->
+		{% if user.is_authenticated and isThisUser %}
+			<a href="{% url 'add_form' 'project' %}" class="btn btn-large btn-block btn-info" type="button" >+ Project</a>
+			<a href="{% url 'add_form' 'work' %}" class="btn btn-large btn-block btn-info" type="button">+ Work</a>
+			<a href="{% url 'add_form' 'volunteer' %}" class="btn btn-large btn-block btn-info" type="button">+ Volunteering</a>
+			<a href="{% url 'edit_form' 'other' userProfile.user.id %}" class="btn btn-large btn-block btn-info" type="button">+ Other Info</a>
+		{% endif %}
 	</div>
-	{% if user.is_authenticated and isThisUser %}
-		<a href="{% url 'add_form' 'project' %}" class="btn btn-large btn-block btn-info" type="button" >+ Project</a>
-		<a href="{% url 'add_form' 'work' %}" class="btn btn-large btn-block btn-info" type="button">+ Work</a>
-		<a href="{% url 'add_form' 'volunteer' %}" class="btn btn-large btn-block btn-info" type="button">+ Volunteering</a>
-		<a href="{% url 'edit_form' 'other' userProfile.user.id %}" class="btn btn-large btn-block btn-info" type="button">+ Other Info</a>
-	{% endif %}
 </div>
 <div class="span9">
 	{% if projects %}
@@ -69,11 +69,13 @@ h4{
 		<ul>
 			<li>{{ work.startDate }} {% if work.endDate %} to {{work.endDate}}{% endif %}</li>
 			<li>{{ work.description }}</li>
+			{% if work.supervisorName or work.supervisorEmail %}
 			<li>Supervisor</li>
 			<ul>
-				<li>{{ work.supervisorName }}</li>
-				<li>{{ work.supervisorEmail }}</li>
+				{% if work.supervisorName %}<li>{{ work.supervisorName }}</li>{% endif %}
+				{% if work.supervisorEmail %}<li>{{ work.supervisorEmail }}</li>{% endif %}
 			</ul>
+			{% endif %}
 		</ul>
 		{% if user.is_authenticated and isThisUser %}
 			<a href="{% url 'edit_form' 'work' work.id %}" class="btn">Edit</a>

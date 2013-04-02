@@ -6,6 +6,8 @@ from builder.models import UserProfile, Project, WorkExperience, VolunteerExperi
 from builder.forms import *
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login
+
 
 
 models = { 
@@ -60,7 +62,10 @@ def register(request):
             new_user = form.save()
             new_profile = UserProfile(firstName=new_user.first_name, lastName=new_user.last_name, user=new_user, email=new_user.email)
             new_profile.save()
-            return HttpResponseRedirect("/")
+            new_user = authenticate(username=request.POST['username'], password=request.POST['password1'])
+            login(request, new_user)
+
+            return HttpResponseRedirect("/form/edit/other/" + str(new_user.id))
     else:
         form = RegistrationForm()
     return render(request, 'registration/register.html', locals())

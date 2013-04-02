@@ -34,9 +34,6 @@
                     <li><a href="/contact">Contact us</a></li>
                     <li><a href="/search">Project Search</a></li>
                     {% if user.is_authenticated %}
-                    <li><a href="{% url 'add_form' 'work' %}">Work Experience</a></li>
-                    <li><a href="{% url 'add_form' 'project' %}">Project Experience</a></li>
-                    <li><a href="{% url 'add_form' 'volunteer' %}">Volunteer Experience</a></li>
                     <li><a href="{% url 'logout' %}">Logout</a></li>
                     {% else %}
                     <li><a href="{% url 'login' %}">Login</a></li>
@@ -53,6 +50,10 @@
             {% endblock %}
         </div>
     </div>
+
+    <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery-1.9.1.min.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery-ui-1.10.2.custom.js"></script>
 
 </body>
 

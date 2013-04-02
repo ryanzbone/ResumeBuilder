@@ -29,6 +29,20 @@ h4 { display: inline; } ​
 			<a href="{% url 'add_form' 'work' %}" class="btn btn-large btn-block btn-info" type="button">+ Work</a>
 			<a href="{% url 'add_form' 'volunteer' %}" class="btn btn-large btn-block btn-info" type="button">+ Volunteering</a>
 			<a href="{% url 'edit_form' 'other' userProfile.user.id %}" class="btn btn-large btn-block btn-info" type="button">+ Other Info</a>
+			<a class="btn dropdown-toggle btn-large btn-block btn-primary" data-toggle="dropdown" style="position:relative;"href="#">
+		    	Export To
+		    	<span class="caret"></span>
+		  	</a>
+		  	<ul class="dropdown-menu">
+		    	<!-- dropdown menu links -->
+		    	<li><a href="{% url 'export' 'pdf' userProfile.user.id %}">PDF</a></li>
+		    	<li><a href="{% url 'export' 'txt' userProfile.user.id %}">Plain Text</a></li>
+		    	<li><a href="{% url 'export' 'doc' userProfile.user.id %}">Word</a></li>
+		 	</ul>
+
+
+
+
 		{% endif %}
 	</div>
 </div>

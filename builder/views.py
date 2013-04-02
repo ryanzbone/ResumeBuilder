@@ -75,10 +75,9 @@ def index(request):
 	userList = UserProfile.objects.all()
 	return render(request, 'index.html', {'userList': userList})
 
-def profile(request, name):
+def profile(request, userId):
 	user = request.user
-	name = name.rsplit("-")
-	userProfile = UserProfile.objects.get(firstName__istartswith = name[0], lastName__istartswith = name[1])
+	userProfile = UserProfile.objects.get(user=userId)
 	if user.id == userProfile.user.id: 
 		isThisUser = True
 	else: 

@@ -10,7 +10,7 @@ admin.autodiscover()
 urlpatterns = patterns('builder.views',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'index', name='index'),
-    url(r'^profile/([^/]+)/$', 'profile', name='profile'),
+    url(r'^profile/(?P<userId>\d+)/$', 'profile', name='profile'),
     url(r'^search/$', 'search'),
     url(r'^contact/$', 'contact'),
     url(r'^contact/thanks/$', 'thanks'),

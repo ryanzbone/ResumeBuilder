@@ -1,22 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
-
-#def uploadUserPic(instance, filename):
-#    return 'images/%s/profilepicture' % (instance.user.username, filename)
-
 class UserProfile(models.Model):
     user = models.OneToOneField(User, primary_key=True)
     firstName = models.CharField('First Name', max_length = 50, blank = True)
     lastName = models.CharField('Last Name', max_length = 50, blank = True)
     email = models.EmailField()
     url = models.URLField(blank = True)
-    phone = models.CharField(max_length = 20)
+    phone = models.CharField(max_length = 20, blank = True)
     altPhone = models.CharField('Alternate Phone', max_length = 20, blank = True)
     image = models.ImageField(upload_to='Images', blank = True)
-    school = models.CharField(max_length = 100)
-    degree = models.CharField(max_length = 100)
+    school = models.CharField(max_length = 100, blank = True)
+    degree = models.CharField(max_length = 100, blank = True)
     altDegree = models.CharField('Secondary Degree', max_length = 100, blank = True)
     altInfo = models.TextField('Other information', blank = True)
     hobbies = models.TextField(blank = True)

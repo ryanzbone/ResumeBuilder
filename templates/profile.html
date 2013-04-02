@@ -19,6 +19,9 @@ h4 { display: inline; } ​
 				{% if userProfile.url %} <li><a href="{{ userProfile.url }}">{{ userProfile.url }}</a></li> {% endif %}
 				{% if userProfile.phone %} <li>{{ userProfile.phone }}</li> {% endif %}
 				{% if userProfile.altPhone %} <li>{{ userProfile.altPhone }} </li> {% endif %}
+				{% if userProfile.school %} <li>{{ userProfile.school }} </li> {% endif %}
+				{% if userProfile.degree %} <li>{{ userProfile.degree }} </li> {% endif %}
+				{% if userProfile.altDegree %} <li>{{ userProfile.altDegree }} </li> {% endif %}
 			</ul>
 		<!-- </div> -->
 		{% if user.is_authenticated and isThisUser %}
@@ -102,6 +105,23 @@ h4 { display: inline; } ​
 			</br></br>
 		{% endif %}
 		{% endfor %}
+	{% endif %}
+
+	{% if userProfile.altInfo %}
+		<h3>Other Information</h3>
+		<p>{{ userProfile.altInfo }}</p>
+	{% endif %}
+	{% if userProfile.clients %}
+		<h3>Clients</h3>
+		<p>{{ userProfile.clients }}</p>
+	{% endif %}
+	{% if userProfile.hobbies %}
+		<h3>Hobbies</h3>
+		<p>{{ userProfile.hobbies }}</p>
+	{% endif %}
+	{% if userProfile.interests %}
+		<h3>Interests</h3>
+		<p>{{ userProfile.interests }}</p>
 	{% endif %}
 </div>
 {% endblock %}

@@ -1,4 +1,4 @@
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseBadRequest
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.core.mail import send_mail
@@ -160,51 +160,24 @@ def contact(request):
 def thanks(request):
 	return render_to_response('thanks.html')
 
-
-
 def export_file(request, fileType, userId):
-	# # Get user information
-	# user = request.user
-	# userProfile = UserProfile.objects.get(user=userId)
-	# workExperience = WorkExperience.objects.filter(user=userProfile)
-	# projects = Project.objects.filter(user=userProfile)
-	# volunteerExperience = VolunteerExperience.objects.filter(user=userProfile)
+	if fileType == 'txt':
+		response = export_txt(request, userId)
+	elif fileType == 'pdf':
+		response = export_pdf(request, userId)
+	elif fileType == 'doc':
+		response = export_doc(request, userId)
+	else: 
+		raise Http404
+	return response
 
- #    # Create the HttpResponse object with the appropriate PDF headers.
-	# response = HttpResponse(content_type='application/pdf')
-	# response['Content-Disposition'] = 'attachment; filename="Career Builder Resume.pdf"'
+def export_pdf (request, userId):
+	raise Http404
 
-	# buffer = BytesIO()
-	# p = canvas.Canvas(buffer, pagesize=letter)
-	# p.drawString(100, 100, "hello there")
-	# p.showPage()
-	# p.save()
-	# pdf = buffer.getvalue()
-	# buffer.close()
-	# response.write(pdf)
-	# return response
+def export_doc(request, userId):
+	raise Http404
 
-    # buffer = BytesIO()
-
-    # # Create the PDF object, using the BytesIO object as its "file."
-    # p = canvas.Canvas(buffer)
-
-    # # Draw things on the PDF. Here's where the PDF generation happens.
-    # # See the ReportLab documentation for the full list of functionality.
-    # p.drawString(100, 100, "Hello world.")
-
-    # # Close the PDF object cleanly.
-    # p.showPage()
-    # p.save()
-
-    # Get the value of the BytesIO buffer and write it to the response.
-    # pdf = buffer.getvalue()
-    # buffer.close()
-    # response.write(pdf)
-    # return response
-
-# @login_required
-# def export_csv(request, userId):
+def export_txt(request, userId):
 	user = request.user
 	userProfile = UserProfile.objects.get(user=userId)
 	workExperience = WorkExperience.objects.filter(user=userProfile)
@@ -213,59 +186,62 @@ def export_file(request, fileType, userId):
 
 	response = HttpResponse(content_type='text/plain')
 	response['Content-Disposition'] = 'attachment; filename="Career Builder Resume.txt"'
-	w = unicodecsv.writer(response, encoding='utf-8')
 
-	# w.writerow((userProfile.firstName, userProfile.lastName))
-	# w.writerow((userProfile.email))
-	# w.writerow((userProfile.url))
-	# w.writerow((userProfile.phone))
-	# w.writerow((userProfile.altPhone))
-	# w.writerow((userProfile.school))
-	# w.writerow((userProfile.degree))
-	# w.writerow((userProfile.altDegree))
-	# w.writerow((userProfile.altInfo))
-	# w.writerow((userProfile.hobbies))
-	# w.writerow((userProfile.clients))
-	# w.writerow((userProfile.interests))
+	profileInfo = [
+		userProfile.firstName + ' ' + userProfile.lastName,
+		'Email: ' + userProfile.email,
+		'Website: ' + userProfile.url,
+		'Phone: ' + userProfile.phone,
+		'Altenate Phone: ' + userProfile.altPhone,
+		'School: ' + userProfile.school,
+		'Degree: ' + userProfile.degree,
+		'Alternate Degree: ' + userProfile.altDegree,
+		'Other Info: ' + userProfile.altInfo,
+		'Hobbies: ' + userProfile.hobbies,
+		'Clients: ' + userProfile.clients,
+		'Interests: ' + userProfile.interests,
+	]
 
-	response.write((userProfile.firstName + " " + userProfile.lastName +"\n"))
-	response.write((userProfile.email+"\n"))
-	response.write((userProfile.url+"\n"))
-	response.write((userProfile.phone+"\n"))
-	response.write((userProfile.altPhone+"\n"))
-	response.write((userProfile.school+"\n"))
-	response.write((userProfile.degree+"\n"))
-	response.write((userProfile.altDegree+"\n"))
-	response.write((userProfile.altInfo+"\n"))
-	response.write((userProfile.hobbies+"\n"))
-	response.write((userProfile.clients+"\n"))
-	response.write((userProfile.interests+"\n"))
+	projectInfo = []
+	workInfo = []
+	volunteerInfo = []
 
-	# w.writerow((u'Projects'))
-	# for p in projects:
-	# 	w.writerow((p.title))
-	# 	w.writerow((p.projectURL))
-	# 	w.writerow((p.description))
+	for p in projects:
+		projectInfo += [
+			'\nTitle: ' + p.title, 
+			'URL: ' + p.projectURL, 
+			'Description: ' + p.description,
+			]
 
-	# w.writerow((u'Work Experience'))
-	# for we in workExperience:
-	# 	w.writerow((we.jobTitle))
-	# 	w.writerow((we.location))
-	# 	# w.writerow((we.startDate))
-	# 	# w.writerow((we.endDate))
-	# 	w.writerow((we.description))
-	# 	w.writerow((we.supervisorName))
-	# 	w.writerow((we.supervisorEmail))
+	for we in workExperience:
+		workInfo += [
+			'\nJob Title: ' + we.jobTitle, 
+			'Location: ' + we.location, 
+			'Description: ' + we.description, 
+			'Start Date: ' + str(we.startDate),
+			'End Date: ' + str(we.endDate),
+			'Supervisor: ' + we.supervisorName, 
+			'Supervisor Email: ' + we.supervisorEmail,
+		]
 
-	# w.writerow((u'Volunteering'))
-	# for v in volunteerExperience:
-	# 	w.writerow((v.jobTitle))
-	# 	w.writerow((v.organization))
-	# 	w.writerow((v.location))
-	# 	# w.writerow((v.startDate))
-	# 	# w.writerow((v.endDate))
-	# 	w.writerow((v.description))
-	# 	w.writerow((v.supervisorName))
-	# 	w.writerow((v.supervisorEmail))
+	for v in volunteerExperience:
+		volunteerInfo += [
+			'\nJob Title: ' + v.jobTitle, 
+			'Organization: ' + v.organization, 
+			'Location: ' + v.location, 
+			'Description: ' + v.description, 
+			'Start Date: ' + str(v.startDate),
+			'End Date: ' + str(v.endDate),
+			'Supervisor: ' + v.supervisorName, 
+			'Supervisor Email: ' + v.supervisorEmail,
+		]
+	
+	response.write('\n'.join(profileInfo))
+	response.write((u'\n\nPROJECTS\n'))
+	response.write('\n'.join(projectInfo))
+	response.write((u'\n\nWORK HISTORY\n'))
+	response.write('\n'.join(workInfo))
+	response.write((u'\n\nVOLUNTEERING\n'))
+	response.write('\n'.join(volunteerInfo))
 
 	return response

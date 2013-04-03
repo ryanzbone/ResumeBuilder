@@ -26,6 +26,7 @@ h4 { display: inline; } ​
 		<!-- </div> -->
 		{% if user.is_authenticated and isThisUser %}
 			<a href="{% url 'add_form' 'project' %}" class="btn btn-large btn-block btn-info" type="button" >+ Project</a>
+			<a href="{% url 'add_form' 'code' %}" class="btn btn-large btn-block btn-info" type="button" >+ Code Snippet</a>
 			<a href="{% url 'add_form' 'work' %}" class="btn btn-large btn-block btn-info" type="button">+ Work</a>
 			<a href="{% url 'add_form' 'volunteer' %}" class="btn btn-large btn-block btn-info" type="button">+ Volunteering</a>
 			<a href="{% url 'edit_form' 'other' userProfile.user.id %}" class="btn btn-large btn-block btn-info" type="button">+ Other Info</a>
@@ -48,7 +49,7 @@ h4 { display: inline; } ​
 </div>
 <div class="span9">
 	{% if projects %}
-	<h3>Project{{ projects|pluralize }}</h3>
+		<h3>Project{{ projects|pluralize }}</h3>
 		{% for project in projects %}
 		<div class="well">
 			<h4>{% if project.projectURL %}<a href="{{ project.projectURL }}">{{ project.title }}</a>{% else %}{{ project.title }}{% endif %}
@@ -77,6 +78,19 @@ h4 { display: inline; } ​
 		</div>
 		{% endfor %}
 	<hr>
+	{% endif %}
+
+	{% if code %}
+		<h3>Code Snippets</h3>
+		{% for c in code %}
+		<h4>{{ c.title }}</h4>
+		<p>{{ c.description }}</p>
+		<pre class="prettyprint linenums">{{ c.code }}</pre>
+		{% if user.is_authenticated and isThisUser %}
+			<a href="{% url 'edit_form' 'code' c.id %}" class="btn">Edit</a>
+		{% endif %}
+		</br></br>
+		{% endfor %}
 	{% endif %}
 
 	{% if workExperience %}

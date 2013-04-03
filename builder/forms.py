@@ -1,5 +1,5 @@
 from django import forms
-from builder.models import UserProfile, WorkExperience, VolunteerExperience, Project
+from builder.models import UserProfile, WorkExperience, VolunteerExperience, Project, CodeSnippet
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
@@ -35,6 +35,11 @@ class UserProfileForm(forms.ModelForm):
 	class Meta:
 		model = UserProfile
 		exclude = ('firstName', 'lastName', 'user')
+
+class CodeSnippetForm(forms.ModelForm):
+	class Meta:
+		model = CodeSnippet
+		exclude = ('user',)
 
 
 class RegistrationForm(UserCreationForm):

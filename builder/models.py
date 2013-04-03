@@ -70,3 +70,12 @@ class VolunteerExperience(models.Model):
 
     class Meta:
         ordering = ['-startDate']
+
+class CodeSnippet(models.Model):
+    user = models.ForeignKey(UserProfile)
+    title = models.CharField(max_length = 150)
+    description = models.TextField()
+    code = models.TextField()
+
+    def __unicode__(self):
+        return self.title

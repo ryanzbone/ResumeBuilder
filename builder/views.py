@@ -12,11 +12,8 @@ from io import BytesIO
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 
-# Used for exporting CSV information
-import csv
-import unicodecsv
-from cStringIO import StringIO
-
+# Used for exporting docx
+from docx import *
 
 def some_view(request):
     # Create the HttpResponse object with the appropriate PDF headers.
@@ -42,19 +39,23 @@ def some_view(request):
     response.write(pdf)
     return response
 
+# Dictionaries used for adding and editing information through forms
 models = { 
 	'work': 		WorkExperience,
 	'volunteer': 	VolunteerExperience,
 	'project': 		Project,
 	'other': 		UserProfile,
+	'code':			CodeSnippet,
 	}
 forms = {
 	'work': 		WorkExperienceForm,
 	'volunteer': 	VolunteerExperienceForm,
 	'project': 		ProjectForm,
 	'other': 		UserProfileForm,
+	'code':			CodeSnippetForm,
 	}
 
+# Creates formType form for adding new information
 @login_required
 def add_form(request, formType):
 	exp = models[formType](user=UserProfile.objects.get(user=request.user))
@@ -62,13 +63,14 @@ def add_form(request, formType):
 		form = forms[formType](request.POST, instance = exp)
 		if form.is_valid():
 			form.save()
-			redirect = '/profile/' + request.user.first_name.lower() + '-' + request.user.last_name.lower()
+			redirect = '/profile/' + str(request.user.id)
 			return HttpResponseRedirect(redirect)
 	else:
 		form = forms[formType]
 	
 	return render(request, 'experience_form.html', locals())
 
+# Loads formType form with information from formID for user to edit or update
 @login_required
 def edit_form(request, formType, formId):
 	if formType == 'other':
@@ -79,7 +81,7 @@ def edit_form(request, formType, formId):
 		form = forms[formType](request.POST, instance=formFromId)
 		if form.is_valid():
 			form.save()
-			redirect = '/profile/' + request.user.first_name.lower() + '-' + request.user.last_name.lower()
+			redirect = '/profile/' + str(request.user.id)
 			return HttpResponseRedirect(redirect)
 	else:
 		form = forms[formType](instance=formFromId)
@@ -103,10 +105,12 @@ def register(request):
     return render(request, 'registration/register.html', locals())
 
 
+# Renders list of user profiles
 def index(request):
 	userList = UserProfile.objects.all()
 	return render(request, 'index.html', {'userList': userList})
 
+# Renders profile page for userId
 def profile(request, userId):
 	user = request.user
 	userProfile = UserProfile.objects.get(user=userId)
@@ -117,13 +121,8 @@ def profile(request, userId):
 	workExperience = WorkExperience.objects.filter(user=userProfile)
 	projects = Project.objects.filter(user=userProfile)
 	volunteerExperience = VolunteerExperience.objects.filter(user=userProfile)
+	code = CodeSnippet.objects.filter(user=userProfile)
 	return render(request, 'profile.html', locals())
-
-@login_required
-def edit_profile(request, name):
-	edit = True
-	response = profile(request, name)
-	return response
 
 def search(request):
 	errors = []
@@ -160,6 +159,7 @@ def contact(request):
 def thanks(request):
 	return render_to_response('thanks.html')
 
+# Exports a fileType file for a given userId
 def export_file(request, fileType, userId):
 	if fileType == 'txt':
 		response = export_txt(request, userId)
@@ -171,49 +171,57 @@ def export_file(request, fileType, userId):
 		raise Http404
 	return response
 
+# returns dictionary of user information
+def userInfo(request, userId):
+	userProfile = UserProfile.objects.get(user=userId)
+	return {
+		'user': request.user, 
+		'userProfile': UserProfile.objects.get(user=userId),
+		'workExperience': WorkExperience.objects.filter(user=userProfile),
+		'projects': Project.objects.filter(user=userProfile),
+		'volunteerExperience': VolunteerExperience.objects.filter(user=userProfile),
+		'code': CodeSnippet.objects.filter(user=userProfile),
+		}
+
 def export_pdf (request, userId):
 	raise Http404
 
 def export_doc(request, userId):
-	raise Http404
+	info = userInfo(request, userId)
+	relationships = relationshiplist()
+	document = newdocument()
+	body = document.xpath('/w:document/w:body', namespaces=nsprefixes)[0]
 
-def export_txt(request, userId):
-	user = request.user
-	userProfile = UserProfile.objects.get(user=userId)
-	workExperience = WorkExperience.objects.filter(user=userProfile)
-	projects = Project.objects.filter(user=userProfile)
-	volunteerExperience = VolunteerExperience.objects.filter(user=userProfile)
-
-	response = HttpResponse(content_type='text/plain')
-	response['Content-Disposition'] = 'attachment; filename="Career Builder Resume.txt"'
-
+	body.append(heading(info['userProfile'].firstName + ' ' + info['userProfile'].lastName, 1))
 	profileInfo = [
-		userProfile.firstName + ' ' + userProfile.lastName,
-		'Email: ' + userProfile.email,
-		'Website: ' + userProfile.url,
-		'Phone: ' + userProfile.phone,
-		'Altenate Phone: ' + userProfile.altPhone,
-		'School: ' + userProfile.school,
-		'Degree: ' + userProfile.degree,
-		'Alternate Degree: ' + userProfile.altDegree,
-		'Other Info: ' + userProfile.altInfo,
-		'Hobbies: ' + userProfile.hobbies,
-		'Clients: ' + userProfile.clients,
-		'Interests: ' + userProfile.interests,
+		'Email: ' + info['userProfile'].email,
+		'Website: ' + info['userProfile'].url,
+		'Phone: ' + info['userProfile'].phone,
+		'Altenate Phone: ' + info['userProfile'].altPhone,
+		'School: ' + info['userProfile'].school,
+		'Degree: ' + info['userProfile'].degree,
+		'Alternate Degree: ' + info['userProfile'].altDegree,
+		'Other Info: ' + info['userProfile'].altInfo,
+		'Hobbies: ' + info['userProfile'].hobbies,
+		'Clients: ' + info['userProfile'].clients,
+		'Interests: ' + info['userProfile'].interests,
 	]
+
+	for i in profileInfo:
+		body.append(paragraph(i, style='ListBullet'))
 
 	projectInfo = []
 	workInfo = []
 	volunteerInfo = []
 
-	for p in projects:
+	for p in info['projects']:
 		projectInfo += [
 			'\nTitle: ' + p.title, 
 			'URL: ' + p.projectURL, 
 			'Description: ' + p.description,
 			]
 
-	for we in workExperience:
+	for we in info['workExperience']:
 		workInfo += [
 			'\nJob Title: ' + we.jobTitle, 
 			'Location: ' + we.location, 
@@ -224,7 +232,109 @@ def export_txt(request, userId):
 			'Supervisor Email: ' + we.supervisorEmail,
 		]
 
-	for v in volunteerExperience:
+	for v in info['volunteerExperience']:
+		volunteerInfo += [
+			'\nJob Title: ' + v.jobTitle, 
+			'Organization: ' + v.organization, 
+			'Location: ' + v.location, 
+			'Description: ' + v.description, 
+			'Start Date: ' + str(v.startDate),
+			'End Date: ' + str(v.endDate),
+			'Supervisor: ' + v.supervisorName, 
+			'Supervisor Email: ' + v.supervisorEmail,
+		]
+
+	for p in projectInfo:
+		body.append(paragraph(p))
+	for w in workInfo:
+		body.append(paragraph(w))
+	for v in volunteerInfo:
+		body.append(paragraph(v))
+
+	# Create our properties, contenttypes, and other support files
+
+	title    = 'Career Builder Resume'
+	subject  = 'Work done for the OCIO'
+	creator  = info['userProfile'].firstName + ' ' + info['userProfile'].lastName
+	keywords = ['resume', 'ocio', 'career', 'work', 'project']
+
+	coreprops = coreproperties(title=title, subject=subject, creator=creator, keywords=keywords)
+    
+	appprops = appproperties()
+	thecontenttypes = contenttypes()
+	thewebsettings = websettings()
+	thewordrelationships = wordrelationships(relationships)
+
+    # Save our document
+	# savedocx(document, coreprops, appprops, thecontenttypes, thewebsettings, thewordrelationships, 'Career Builder Resume.docx')
+
+	response = HttpResponse(document, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+	response['Content-Disposition'] = 'attachment; filename="A Career Builder Resume.docx"'
+
+	return response
+
+# Exports plain text file containg all information a user has entered into the app
+def export_txt(request, userId):
+	# gets dictionary of user information
+	info = userInfo(request, userId)
+
+	# Declare response to return as a plain text file named "Career Builder Resume.txt"
+	response = HttpResponse(content_type='text/plain')
+	response['Content-Disposition'] = 'attachment; filename="Career Builder Resume.txt"'
+
+	# Declare arrays to store user info for writing
+	profileInfo = []
+	code = []
+	projectInfo = []
+	workInfo = []
+	volunteerInfo = []
+
+	# Get general info
+	profileInfo += [
+	info['userProfile'].firstName + ' ' + info['userProfile'].lastName,
+		'Email: ' + info['userProfile'].email,
+		'Website: ' + info['userProfile'].url,
+		'Phone: ' + info['userProfile'].phone,
+		'Altenate Phone: ' + info['userProfile'].altPhone,
+		'School: ' + info['userProfile'].school,
+		'Degree: ' + info['userProfile'].degree,
+		'Alternate Degree: ' + info['userProfile'].altDegree,
+		'Other Info: ' + info['userProfile'].altInfo,
+		'Hobbies: ' + info['userProfile'].hobbies,
+		'Clients: ' + info['userProfile'].clients,
+		'Interests: ' + info['userProfile'].interests,
+	]
+
+	# Get all project info
+	for p in info['projects']:
+		projectInfo += [
+			'\nTitle: ' + p.title, 
+			'URL: ' + p.projectURL, 
+			'Description: ' + p.description,
+			]
+
+	# Get all code snippets
+	for c in info['code']:
+		code += [
+		'\nTitle: ' + c.title,
+		'Description: ' + c.description,
+		'Code:\n' + c.code,
+	]
+
+	# Get all work expreience 
+	for we in info['workExperience']:
+		workInfo += [
+			'\nJob Title: ' + we.jobTitle, 
+			'Location: ' + we.location, 
+			'Description: ' + we.description, 
+			'Start Date: ' + str(we.startDate),
+			'End Date: ' + str(we.endDate),
+			'Supervisor: ' + we.supervisorName, 
+			'Supervisor Email: ' + we.supervisorEmail,
+		]
+
+	# Get all volunteering info
+	for v in info['volunteerExperience']:
 		volunteerInfo += [
 			'\nJob Title: ' + v.jobTitle, 
 			'Organization: ' + v.organization, 
@@ -239,6 +349,8 @@ def export_txt(request, userId):
 	response.write('\n'.join(profileInfo))
 	response.write((u'\n\nPROJECTS\n'))
 	response.write('\n'.join(projectInfo))
+	response.write((u'\n\nCODE\n'))
+	response.write('\n'.join(code))
 	response.write((u'\n\nWORK HISTORY\n'))
 	response.write('\n'.join(workInfo))
 	response.write((u'\n\nVOLUNTEERING\n'))

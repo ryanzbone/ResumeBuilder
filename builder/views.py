@@ -8,36 +8,19 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
 
-from io import BytesIO
+# Used for PDF export
+from StringIO import StringIO
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Preformatted
+from reportlab.lib.styles import getSampleStyleSheet
 
 # Used for exporting docx
 from docx import *
 
-def some_view(request):
-    # Create the HttpResponse object with the appropriate PDF headers.
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="somefilename.pdf"'
 
-    buffer = BytesIO()
 
-    # Create the PDF object, using the BytesIO object as its "file."
-    p = canvas.Canvas(buffer)
 
-    # Draw things on the PDF. Here's where the PDF generation happens.
-    # See the ReportLab documentation for the full list of functionality.
-    p.drawString(100, 100, "Hello world.")
-
-    # Close the PDF object cleanly.
-    p.showPage()
-    p.save()
-
-    # Get the value of the BytesIO buffer and write it to the response.
-    pdf = buffer.getvalue()
-    buffer.close()
-    response.write(pdf)
-    return response
 
 # Dictionaries used for adding and editing information through forms
 models = { 
@@ -174,17 +157,72 @@ def export_file(request, fileType, userId):
 # returns dictionary of user information
 def userInfo(request, userId):
 	userProfile = UserProfile.objects.get(user=userId)
+
+	profileInfo = []
+	projectInfo = []
+	workInfo = []
+	volunteerInfo = []
+	code = []
+
+	profileInfo = [
+		'Email: ' + userProfile.email,
+		'Website: ' + userProfile.url,
+		'Phone: ' + userProfile.phone,
+		'Altenate Phone: ' + userProfile.altPhone,
+		'School: ' + userProfile.school,
+		'Degree: ' + userProfile.degree,
+		'Alternate Degree: ' + userProfile.altDegree,
+		'Other Info: ' + userProfile.altInfo,
+		'Hobbies: ' + userProfile.hobbies,
+		'Clients: ' + userProfile.clients,
+		'Interests: ' + userProfile.interests,
+	]
+
+	for p in Project.objects.filter(user=userId):
+		projectInfo += [
+			'\nTitle: ' + p.title, 
+			'URL: ' + p.projectURL, 
+			'Description: ' + p.description,
+			]
+
+	for we in WorkExperience.objects.filter(user=userProfile):
+		workInfo += [
+			'\nJob Title: ' + we.jobTitle, 
+			'Location: ' + we.location, 
+			'Description: ' + we.description, 
+			'Start Date: ' + str(we.startDate),
+			'End Date: ' + str(we.endDate),
+			'Supervisor: ' + we.supervisorName, 
+			'Supervisor Email: ' + we.supervisorEmail,
+		]
+
+	for v in VolunteerExperience.objects.filter(user=userProfile):
+		volunteerInfo += [
+			'\nJob Title: ' + v.jobTitle, 
+			'Organization: ' + v.organization, 
+			'Location: ' + v.location, 
+			'Description: ' + v.description, 
+			'Start Date: ' + str(v.startDate),
+			'End Date: ' + str(v.endDate),
+			'Supervisor: ' + v.supervisorName, 
+			'Supervisor Email: ' + v.supervisorEmail,
+		]
+
+	for c in CodeSnippet.objects.filter(user=userProfile):
+		code += [
+			'\nTitle: ' + c.title,
+			'Description: ' + c.description,
+			'Code:\n' + c.code,
+		]
+
 	return {
 		'user': request.user, 
-		'userProfile': UserProfile.objects.get(user=userId),
-		'workExperience': WorkExperience.objects.filter(user=userProfile),
-		'projects': Project.objects.filter(user=userProfile),
-		'volunteerExperience': VolunteerExperience.objects.filter(user=userProfile),
-		'code': CodeSnippet.objects.filter(user=userProfile),
+		'profileInfo': profileInfo,
+		'workInfo': workInfo,
+		'projectInfo': projectInfo,
+		'volunteerInfo': volunteerInfo,
+		'code': code,
 		}
-
-def export_pdf (request, userId):
-	raise Http404
 
 def export_doc(request, userId):
 	info = userInfo(request, userId)
@@ -281,79 +319,94 @@ def export_txt(request, userId):
 	# Declare response to return as a plain text file named "Career Builder Resume.txt"
 	response = HttpResponse(content_type='text/plain')
 	response['Content-Disposition'] = 'attachment; filename="Career Builder Resume.txt"'
-
-	# Declare arrays to store user info for writing
-	profileInfo = []
-	code = []
-	projectInfo = []
-	workInfo = []
-	volunteerInfo = []
-
-	# Get general info
-	profileInfo += [
-	info['userProfile'].firstName + ' ' + info['userProfile'].lastName,
-		'Email: ' + info['userProfile'].email,
-		'Website: ' + info['userProfile'].url,
-		'Phone: ' + info['userProfile'].phone,
-		'Altenate Phone: ' + info['userProfile'].altPhone,
-		'School: ' + info['userProfile'].school,
-		'Degree: ' + info['userProfile'].degree,
-		'Alternate Degree: ' + info['userProfile'].altDegree,
-		'Other Info: ' + info['userProfile'].altInfo,
-		'Hobbies: ' + info['userProfile'].hobbies,
-		'Clients: ' + info['userProfile'].clients,
-		'Interests: ' + info['userProfile'].interests,
-	]
-
-	# Get all project info
-	for p in info['projects']:
-		projectInfo += [
-			'\nTitle: ' + p.title, 
-			'URL: ' + p.projectURL, 
-			'Description: ' + p.description,
-			]
-
-	# Get all code snippets
-	for c in info['code']:
-		code += [
-		'\nTitle: ' + c.title,
-		'Description: ' + c.description,
-		'Code:\n' + c.code,
-	]
-
-	# Get all work expreience 
-	for we in info['workExperience']:
-		workInfo += [
-			'\nJob Title: ' + we.jobTitle, 
-			'Location: ' + we.location, 
-			'Description: ' + we.description, 
-			'Start Date: ' + str(we.startDate),
-			'End Date: ' + str(we.endDate),
-			'Supervisor: ' + we.supervisorName, 
-			'Supervisor Email: ' + we.supervisorEmail,
-		]
-
-	# Get all volunteering info
-	for v in info['volunteerExperience']:
-		volunteerInfo += [
-			'\nJob Title: ' + v.jobTitle, 
-			'Organization: ' + v.organization, 
-			'Location: ' + v.location, 
-			'Description: ' + v.description, 
-			'Start Date: ' + str(v.startDate),
-			'End Date: ' + str(v.endDate),
-			'Supervisor: ' + v.supervisorName, 
-			'Supervisor Email: ' + v.supervisorEmail,
-		]
 	
-	response.write('\n'.join(profileInfo))
+	response.write('\n'.join(info['profileInfo']))
 	response.write((u'\n\nPROJECTS\n'))
-	response.write('\n'.join(projectInfo))
+	response.write('\n'.join(info['projectInfo']))
 	response.write((u'\n\nCODE\n'))
-	response.write('\n'.join(code))
+	response.write('\n'.join(info['code']))
 	response.write((u'\n\nWORK HISTORY\n'))
-	response.write('\n'.join(workInfo))
+	response.write('\n'.join(info['workInfo']))
 	response.write((u'\n\nVOLUNTEERING\n'))
-	response.write('\n'.join(volunteerInfo))
+	response.write('\n'.join(info['volunteerInfo']))
+
+	return response
+
+def export_pdf (request, userId):
+	# Get info to print
+	info = userInfo(request, userId)
+
+	# Create the HttpResponse object with the appropriate PDF headers.
+	response = HttpResponse(content_type='application/pdf')
+	response['Content-Disposition'] = 'attachment; filename="Career Builder Resume.pdf"'
+
+	# Create the PDF object, using the BytesIO object as its "file."
+	buffer = StringIO()
+	doc = SimpleDocTemplate(buffer, pagesize=letter)
+	Story = []
+	stylesheet = getSampleStyleSheet()
+	style = stylesheet['Normal']
+
+	# Append user information into Story. 
+	# "counter" used for formatting - keeps track of what's been printed and allows for new line between project, work, etc entries
+	Story.append(Paragraph(info['user'].first_name + ' ' + info['user'].last_name, style))
+	Story.append(Spacer(1, 12))
+
+	for i in info['profileInfo']:
+		Story.append(Paragraph(i, style))
+	
+	Story.append(Spacer(1, 12))
+	Story.append(Paragraph('Projects', style))
+	Story.append(Spacer(1, 12))
+
+	counter = 0
+
+	for p in info['projectInfo']:
+		Story.append(Paragraph(p, style))
+		counter += 1
+		if counter > 2:
+			Story.append(Spacer(1, 12))
+			counter = 0
+
+	Story.append(Spacer(1, 12))
+	Story.append(Paragraph('Code Snippets', style))
+	Story.append(Spacer(1, 12))
+
+	for c in info['code']:
+		if counter < 2:
+			Story.append(Paragraph(c, style))
+			counter += 1
+		else:
+			Story.append(Preformatted(c, stylesheet['Code']))
+			Story.append(Spacer(1, 12))
+			counter = 0
+
+	Story.append(Spacer(1, 12))
+	Story.append(Paragraph('Work History', style))
+	Story.append(Spacer(1, 12))
+
+	for w in info['workInfo']:
+		Story.append(Paragraph(w, style))
+		counter += 1
+		if counter > 6:
+			Story.append(Spacer(1, 12))
+			counter = 0
+
+	Story.append(Spacer(1, 12))
+	Story.append(Paragraph('Volunteering', style))
+	Story.append(Spacer(1, 12))
+
+	for v in info['volunteerInfo']:
+		Story.append(Paragraph(v, style))
+		counter += 1
+		if counter > 7:
+			Story.append(Spacer(1, 12))
+			counter = 0
+
+	# Build the document, get the value of the BytesIO buffer and write it to the response.
+	doc.build(Story)
+	pdf = buffer.getvalue()
+	buffer.close()
+	response.write(pdf)
 
 	return response

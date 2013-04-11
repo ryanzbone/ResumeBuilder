@@ -14,20 +14,20 @@
 			</ul>
 		<!-- </div> -->
 		{% if user.is_authenticated and isThisUser %}
-			<a href="{% url 'add_form' 'project' %}" class="btn btn-large btn-block btn-danger" type="button" >+ Project</a>
-			<a href="{% url 'add_form' 'code' %}" class="btn btn-large btn-block btn-danger" type="button" >+ Code Snippet</a>
-			<a href="{% url 'add_form' 'work' %}" class="btn btn-large btn-block btn-danger" type="button">+ Work</a>
-			<a href="{% url 'add_form' 'volunteer' %}" class="btn btn-large btn-block btn-danger" type="button">+ Volunteering</a>
-			<a href="{% url 'edit_form' 'other' userProfile.user.id %}" class="btn btn-large btn-block btn-danger" type="button">+ Other Info</a>
+			<a href="{% url add_form 'project' %}" class="btn btn-large btn-block btn-danger" type="button" >+ Project</a>
+			<a href="{% url add_form 'code' %}" class="btn btn-large btn-block btn-danger" type="button" >+ Code Snippet</a>
+			<a href="{% url add_form 'work' %}" class="btn btn-large btn-block btn-danger" type="button">+ Work</a>
+			<a href="{% url add_form 'volunteer' %}" class="btn btn-large btn-block btn-danger" type="button">+ Volunteering</a>
+			<a href="{% url edit_form 'other' userProfile.user.id %}" class="btn btn-large btn-block btn-danger" type="button">+ Other Info</a>
 			<a class="btn dropdown-toggle btn-large btn-block" data-toggle="dropdown" style="position:relative;"href="#">
 		    	Export To
 		    	<span class="caret"></span>
 		  	</a>
 		  	<ul class="dropdown-menu">
 		    	<!-- dropdown menu links -->
-		    	<li><a href="{% url 'export' 'pdf' userProfile.user.id %}">PDF</a></li>
-		    	<li><a href="{% url 'export' 'txt' userProfile.user.id %}">Plain Text</a></li>
-		    	<li><a href="{% url 'export' 'doc' userProfile.user.id %}">Word</a></li>
+		    	<li><a href="{% url export 'pdf' userProfile.user.id %}">PDF</a></li>
+		    	<li><a href="{% url export 'txt' userProfile.user.id %}">Plain Text</a></li>
+		    	<li><a href="{% url export 'doc' userProfile.user.id %}">Word</a></li>
 		 	</ul>
 		{% endif %}
 	</div>

@@ -1,12 +1,9 @@
 {% extends "base.html" %}
 {% block title %} {{ formType|capfirst }} Experience {% endblock %}
 {% block head %}
-<script>
-	$(document).ready(function() {
-		$( "#id_startDate" ).datepicker();
-		$( "#id_endDate" ).datepicker();
-	});
-</script>
+
+    <link href="{{ STATIC_URL }}css/ui-lightness/jquery-ui-1.10.2.custom.css" rel="stylesheet" media="screen">
+
 {% endblock %}
 
 {% block content %}
@@ -28,6 +25,15 @@
 	{% include 'genneric_form.html'%}
 	{5 endwth %}
 	{%endcomment%}
+
+<script src="{{ STATIC_URL }}js/jquery-ui-1.10.2.custom.js"></script>
+<script>
+	$(document).ready(function() {
+		$( "#id_startDate" ).datepicker();
+		$( "#id_endDate" ).datepicker();
+	});
+</script>
+
 {% endblock %}
 
 

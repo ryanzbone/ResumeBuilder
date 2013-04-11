@@ -24,7 +24,7 @@
 				<p><br/>{{ project.description }}</p>
 			{% endif %}
 			{% if user.is_authenticated and isThisUser %}
-				<a href="{% url 'edit_form' 'project' project.id %}" class="btn">Edit</a>
+				<a href="{% url edit_form 'project' project.id %}" class="btn">Edit</a>
 			{% endif %}
 		</div>
 		{% endfor %}
@@ -38,7 +38,7 @@
 		<p>{{ c.description }}</p>
 		<pre>{{ c.code }}</pre>
 		{% if user.is_authenticated and isThisUser %}
-			<a href="{% url 'edit_form' 'code' c.id %}" class="btn">Edit</a>
+			<a href="{% url edit_form 'code' c.id %}" class="btn">Edit</a>
 		{% endif %}
 		</br></br>
 		{% endfor %}
@@ -60,7 +60,7 @@
 			{% endif %}
 		</ul>
 		{% if user.is_authenticated and isThisUser %}
-			<a href="{% url 'edit_form' 'work' work.id %}" class="btn">Edit</a>
+			<a href="{% url edit_form 'work' work.id %}" class="btn">Edit</a>
 		</br></br>
 		{% endif %}
 		{% endfor %}
@@ -80,7 +80,7 @@
 			</ul>
 		</ul>
 		{% if user.is_authenticated and isThisUser %}
-			<a href="{% url 'edit_form' 'volunteer' vol.id %}" class="btn">Edit</a>
+			<a href="{% url edit_form 'volunteer' vol.id %}" class="btn">Edit</a>
 			</br></br>
 		{% endif %}
 		{% endfor %}

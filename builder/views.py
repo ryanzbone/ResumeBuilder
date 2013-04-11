@@ -16,7 +16,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Preformatte
 from reportlab.lib.styles import getSampleStyleSheet
 
 # Used for exporting docx
-from docx import *
+# from docx import *
 
 
 

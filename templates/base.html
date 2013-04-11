@@ -11,10 +11,8 @@
     {% load staticfiles %}
     <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
     <script src="{{ STATIC_URL }}js/jquery-1.9.1.min.js"></script>
-    <script src="{{ STATIC_URL }}js/jquery-ui-1.10.2.custom.js"></script>
 
     <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet" media="screen">
-    <link href="{{ STATIC_URL }}css/ui-lightness/jquery-ui-1.10.2.custom.css" rel="stylesheet" media="screen">
 
     <style type="text/css">
     .page-content {padding:40px;}
@@ -34,9 +32,9 @@
                     <li><a href="/contact">Contact us</a></li>
                     <li><a href="/search">Project Search</a></li>
                     {% if user.is_authenticated %}
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                    <li><a href="{% url logout %}">Logout</a></li>
                     {% else %}
-                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url login %}">Login</a></li>
                     {% endif %}
                 </ul>
             </div>

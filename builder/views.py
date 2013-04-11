@@ -16,7 +16,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Preformatte
 from reportlab.lib.styles import getSampleStyleSheet
 
 # Used for exporting docx
-# from docx import *
+from docx import *
 
 
 
@@ -230,73 +230,23 @@ def export_doc(request, userId):
 	document = newdocument()
 	body = document.xpath('/w:document/w:body', namespaces=nsprefixes)[0]
 
-	body.append(heading(info['userProfile'].firstName + ' ' + info['userProfile'].lastName, 1))
-	profileInfo = [
-		'Email: ' + info['userProfile'].email,
-		'Website: ' + info['userProfile'].url,
-		'Phone: ' + info['userProfile'].phone,
-		'Altenate Phone: ' + info['userProfile'].altPhone,
-		'School: ' + info['userProfile'].school,
-		'Degree: ' + info['userProfile'].degree,
-		'Alternate Degree: ' + info['userProfile'].altDegree,
-		'Other Info: ' + info['userProfile'].altInfo,
-		'Hobbies: ' + info['userProfile'].hobbies,
-		'Clients: ' + info['userProfile'].clients,
-		'Interests: ' + info['userProfile'].interests,
-	]
-
-	for i in profileInfo:
-		body.append(paragraph(i, style='ListBullet'))
-
-	projectInfo = []
-	workInfo = []
-	volunteerInfo = []
-
-	for p in info['projects']:
-		projectInfo += [
-			'\nTitle: ' + p.title, 
-			'URL: ' + p.projectURL, 
-			'Description: ' + p.description,
-			]
-
-	for we in info['workExperience']:
-		workInfo += [
-			'\nJob Title: ' + we.jobTitle, 
-			'Location: ' + we.location, 
-			'Description: ' + we.description, 
-			'Start Date: ' + str(we.startDate),
-			'End Date: ' + str(we.endDate),
-			'Supervisor: ' + we.supervisorName, 
-			'Supervisor Email: ' + we.supervisorEmail,
-		]
-
-	for v in info['volunteerExperience']:
-		volunteerInfo += [
-			'\nJob Title: ' + v.jobTitle, 
-			'Organization: ' + v.organization, 
-			'Location: ' + v.location, 
-			'Description: ' + v.description, 
-			'Start Date: ' + str(v.startDate),
-			'End Date: ' + str(v.endDate),
-			'Supervisor: ' + v.supervisorName, 
-			'Supervisor Email: ' + v.supervisorEmail,
-		]
-
-	for p in projectInfo:
-		body.append(paragraph(p))
-	for w in workInfo:
-		body.append(paragraph(w))
-	for v in volunteerInfo:
-		body.append(paragraph(v))
+	body.append(paragraph(info['profileInfo']))
+	
+	# for p in projectInfo:
+	# 	body.append(paragraph(p))
+	# for w in workInfo:
+	# 	body.append(paragraph(w))
+	# for v in volunteerInfo:
+	# 	body.append(paragraph(v))
 
 	# Create our properties, contenttypes, and other support files
 
 	title    = 'Career Builder Resume'
 	subject  = 'Work done for the OCIO'
-	creator  = info['userProfile'].firstName + ' ' + info['userProfile'].lastName
+	# creator  = info['userProfile'].firstName + ' ' + info['userProfile'].lastName
 	keywords = ['resume', 'ocio', 'career', 'work', 'project']
 
-	coreprops = coreproperties(title=title, subject=subject, creator=creator, keywords=keywords)
+	coreprops = coreproperties(title=title, subject=subject, creator='me', keywords=keywords)
     
 	appprops = appproperties()
 	thecontenttypes = contenttypes()
@@ -304,12 +254,12 @@ def export_doc(request, userId):
 	thewordrelationships = wordrelationships(relationships)
 
     # Save our document
-	# savedocx(document, coreprops, appprops, thecontenttypes, thewebsettings, thewordrelationships, 'Career Builder Resume.docx')
+	savedocx(document, coreprops, appprops, contenttypes, websettings, wordrelationships, 'Welcome to the Python docx module.docx')
 
 	response = HttpResponse(document, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
 	response['Content-Disposition'] = 'attachment; filename="A Career Builder Resume.docx"'
 
-	return response
+	return document
 
 # Exports plain text file containg all information a user has entered into the app
 def export_txt(request, userId):

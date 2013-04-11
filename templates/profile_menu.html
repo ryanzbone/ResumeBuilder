@@ -1,0 +1,34 @@
+<div class="span3">
+	<div style="position:fixed">
+		<h2>{{ userProfile }}</h2>
+		<!-- <div class="well"> -->
+			<h3>Contact Info</h3>
+			<ul>
+				{% if userProfile.email %} <li><a href="mailto:{{ userProfile.email }}">{{ userProfile.email }}</a></li> {% endif %}
+				{% if userProfile.url %} <li><a href="{{ userProfile.url }}">{{ userProfile.url }}</a></li> {% endif %}
+				{% if userProfile.phone %} <li>{{ userProfile.phone }}</li> {% endif %}
+				{% if userProfile.altPhone %} <li>{{ userProfile.altPhone }} </li> {% endif %}
+				{% if userProfile.school %} <li>{{ userProfile.school }} </li> {% endif %}
+				{% if userProfile.degree %} <li>{{ userProfile.degree }} </li> {% endif %}
+				{% if userProfile.altDegree %} <li>{{ userProfile.altDegree }} </li> {% endif %}
+			</ul>
+		<!-- </div> -->
+		{% if user.is_authenticated and isThisUser %}
+			<a href="{% url 'add_form' 'project' %}" class="btn btn-large btn-block btn-danger" type="button" >+ Project</a>
+			<a href="{% url 'add_form' 'code' %}" class="btn btn-large btn-block btn-danger" type="button" >+ Code Snippet</a>
+			<a href="{% url 'add_form' 'work' %}" class="btn btn-large btn-block btn-danger" type="button">+ Work</a>
+			<a href="{% url 'add_form' 'volunteer' %}" class="btn btn-large btn-block btn-danger" type="button">+ Volunteering</a>
+			<a href="{% url 'edit_form' 'other' userProfile.user.id %}" class="btn btn-large btn-block btn-danger" type="button">+ Other Info</a>
+			<a class="btn dropdown-toggle btn-large btn-block" data-toggle="dropdown" style="position:relative;"href="#">
+		    	Export To
+		    	<span class="caret"></span>
+		  	</a>
+		  	<ul class="dropdown-menu">
+		    	<!-- dropdown menu links -->
+		    	<li><a href="{% url 'export' 'pdf' userProfile.user.id %}">PDF</a></li>
+		    	<li><a href="{% url 'export' 'txt' userProfile.user.id %}">Plain Text</a></li>
+		    	<li><a href="{% url 'export' 'doc' userProfile.user.id %}">Word</a></li>
+		 	</ul>
+		{% endif %}
+	</div>
+</div>

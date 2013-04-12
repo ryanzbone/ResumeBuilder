@@ -17,6 +17,7 @@ class UserProfile(models.Model):
     hobbies = models.TextField(blank = True)
     clients = models.TextField(blank = True)
     interests = models.TextField(blank = True)
+    visible = models.BooleanField(default = True)
    
     def __unicode__(self):
         #return self.email
@@ -34,6 +35,7 @@ class Project(models.Model):
     isPublic = models.BooleanField(default = True)
     projectImage = models.ImageField('Screen shot', upload_to = 'Images', blank = True)
     highlight = models.BooleanField()
+    visible = models.BooleanField(default = True)
     def __unicode__(self):
         return self.title
 
@@ -49,6 +51,7 @@ class WorkExperience(models.Model):
     description = models.TextField('Job description')
     supervisorName = models.CharField('Supervisor name', max_length = 100, blank = True)
     supervisorEmail = models.EmailField('Supervisor email', blank = True)
+    visible = models.BooleanField(default = True)
     def __unicode__(self):
         return self.jobTitle
 
@@ -65,6 +68,7 @@ class VolunteerExperience(models.Model):
     supervisorName = models.CharField('Supervisor name', max_length = 100)
     supervisorEmail = models.EmailField('Supervisor email')
     location = models.CharField(max_length = 250)
+    visible = models.BooleanField(default = True)
     def __unicode__(self):
         return u'%s - %s' % (self.jobTitle, self.organization)
 
@@ -76,6 +80,7 @@ class CodeSnippet(models.Model):
     title = models.CharField(max_length = 150)
     description = models.TextField()
     code = models.TextField()
+    visible = models.BooleanField(default = True)
 
     def __unicode__(self):
         return self.title

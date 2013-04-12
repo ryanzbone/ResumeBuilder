@@ -1,8 +1,12 @@
 from django.contrib import admin
-from builder.models import UserProfile, Project, WorkExperience, VolunteerExperience
+from builder.models import UserProfile, Project, CodeSnippet, WorkExperience, VolunteerExperience
 
 class ProjectInline(admin.StackedInline):
     model = Project
+    extra = 0
+
+class CodeInLine(admin.StackedInline):
+    model = CodeSnippet
     extra = 0
     
 class WorkExperienceInline(admin.StackedInline):
@@ -23,6 +27,6 @@ class UserProfileAdmin(admin.ModelAdmin):
         ('Education',       {'fields': ('school', 'degree', 'altDegree')}),
         ('Other',              {'fields': ('altInfo', 'hobbies', 'clients', 'interests')})
     )
-    inlines = [ProjectInline, WorkExperienceInline, VolunteerExperienceInline]
+    inlines = [ProjectInline, CodeInLine, WorkExperienceInline, VolunteerExperienceInline]
 
 admin.site.register(UserProfile, UserProfileAdmin)

@@ -8,23 +8,18 @@
 
 {% block content %}
 	<div class="page-header">
-    	<h1>{{ formType|capfirst }} Experience</h1>
-
-    	
-	<form action="" method="post">
-		{% csrf_token %}
-		<table>
-			{{ form.as_table }}
-		</table>
-		<input type="submit" value="Submit">
-	</form>
-
+    	<h1>{{ formType|capfirst }} Experience</h1>    	
+		<form action="" method="post">
+			{% csrf_token %}
+			<table>
+				{{ form.as_table }}
+			</table>
+			<input type="submit" value="Submit" class="btn">
+			{% if formId and formType != 'other' %}
+			<a href="{% url delete_request formType formFromId.id %}" class="btn btn-danger">Delete Entry</a>
+			{% endif %}
+		</form>
 	</div>
-	{%comment%}
-	{% with form as form %}
-	{% include 'genneric_form.html'%}
-	{5 endwth %}
-	{%endcomment%}
 
 <script src="{{ STATIC_URL }}js/jquery-ui-1.10.2.custom.js"></script>
 <script>
@@ -35,6 +30,3 @@
 </script>
 
 {% endblock %}
-
-
-////

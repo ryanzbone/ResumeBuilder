@@ -71,6 +71,23 @@ def edit_form(request, formType, formId):
 
 	return render(request, 'experience_form.html', locals())
 
+@login_required
+def delete_request(request, formType, formId):
+	entry = models[formType].objects.get(id=formId)
+	return render(request, 'delete.html', locals())
+
+@login_required
+def delete_confirm(request, formType, formId):
+	entry = models[formType].objects.get(id=formId)
+	if entry.visible != False:
+		entry.visible = False
+		entry.save()
+	else:
+		raise Http404 # User is trying to delete something that's already been deleted
+
+	return HttpResponseRedirect('/profile/' + str(request.user.id))
+
+
 
 def register(request):
     if request.method == 'POST':
@@ -90,7 +107,7 @@ def register(request):
 
 # Renders list of user profiles
 def index(request):
-	userList = UserProfile.objects.all()
+	userList = UserProfile.objects.filter(visible=True)
 	return render(request, 'index.html', {'userList': userList})
 
 # Renders profile page for userId
@@ -101,10 +118,10 @@ def profile(request, userId):
 		isThisUser = True
 	else: 
 		isThisUser = False
-	workExperience = WorkExperience.objects.filter(user=userProfile)
-	projects = Project.objects.filter(user=userProfile)
-	volunteerExperience = VolunteerExperience.objects.filter(user=userProfile)
-	code = CodeSnippet.objects.filter(user=userProfile)
+	workExperience = WorkExperience.objects.filter(user=userProfile, visible=True)
+	projects = Project.objects.filter(user=userProfile, visible=True)
+	volunteerExperience = VolunteerExperience.objects.filter(user=userProfile, visible=True)
+	code = CodeSnippet.objects.filter(user=userProfile, visible=True)
 	return render(request, 'profile.html', locals())
 
 # Exports a fileType file for a given userId
@@ -143,14 +160,14 @@ def userInfo(request, userId):
 		'Interests: ' + userProfile.interests,
 	]
 
-	for p in Project.objects.filter(user=userId):
+	for p in Project.objects.filter(user=userId, visible=True):
 		projectInfo += [
 			'\nTitle: ' + p.title, 
 			'URL: ' + p.projectURL, 
 			'Description: ' + p.description,
 			]
 
-	for we in WorkExperience.objects.filter(user=userProfile):
+	for we in WorkExperience.objects.filter(user=userProfile, visible=True):
 		workInfo += [
 			'\nJob Title: ' + we.jobTitle, 
 			'Location: ' + we.location, 
@@ -161,7 +178,7 @@ def userInfo(request, userId):
 			'Supervisor Email: ' + we.supervisorEmail,
 		]
 
-	for v in VolunteerExperience.objects.filter(user=userProfile):
+	for v in VolunteerExperience.objects.filter(user=userProfile, visible=True):
 		volunteerInfo += [
 			'\nJob Title: ' + v.jobTitle, 
 			'Organization: ' + v.organization, 
@@ -173,7 +190,7 @@ def userInfo(request, userId):
 			'Supervisor Email: ' + v.supervisorEmail,
 		]
 
-	for c in CodeSnippet.objects.filter(user=userProfile):
+	for c in CodeSnippet.objects.filter(user=userProfile, visible=True):
 		code += [
 			'\nTitle: ' + c.title,
 			'Description: ' + c.description,

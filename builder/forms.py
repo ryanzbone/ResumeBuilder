@@ -18,28 +18,27 @@ class ContactForm(forms.Form):
 class WorkExperienceForm(forms.ModelForm):
 	class Meta:
 		model = WorkExperience
-		exclude = ('user',)
+		exclude = ('user', 'visible',)
 
 class VolunteerExperienceForm(forms.ModelForm):
 	class Meta:
 		model = VolunteerExperience
-		exclude = ('user',)
-
+		exclude = ('user', 'visible',)
 
 class ProjectForm(forms.ModelForm):
 	class Meta:
 		model = Project
-		exclude = ('user',)
+		exclude = ('user', 'visible',)
 
 class UserProfileForm(forms.ModelForm):
 	class Meta:
 		model = UserProfile
-		exclude = ('firstName', 'lastName', 'user')
+		exclude = ('firstName', 'lastName', 'user', 'visible',)
 
 class CodeSnippetForm(forms.ModelForm):
 	class Meta:
 		model = CodeSnippet
-		exclude = ('user',)
+		exclude = ('user','visible',)
 
 
 class RegistrationForm(UserCreationForm):

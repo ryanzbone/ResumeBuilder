@@ -80,14 +80,12 @@ def delete_confirm(request, formType, formId):
 
 	return HttpResponseRedirect('/profile/' + str(request.user.id))
 
-
-
 def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
             new_user = form.save()
-            new_profile = UserProfile(firstName=new_user.first_name, lastName=new_user.last_name, user=new_user, email=new_user.email)
+            new_profile = UserProfile(firstName=new_user.first_name.capitalize(), lastName=new_user.last_name.capitalize(), user=new_user, email=new_user.email)
             new_profile.save()
             new_user = authenticate(username=request.POST['username'], password=request.POST['password1'])
             login(request, new_user)
@@ -97,10 +95,9 @@ def register(request):
         form = RegistrationForm()
     return render(request, 'registration/register.html', locals())
 
-
 # Renders list of user profiles
 def index(request):
-	userList = UserProfile.objects.filter(visible=True)
+	userList = UserProfile.objects.filter(visible=True,).order_by('lastName')
 	return render(request, 'index.html', {'userList': userList})
 
 # Renders profile page for userId

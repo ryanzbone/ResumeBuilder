@@ -2,16 +2,39 @@
 {% block title %}Index{% endblock %}
 
 {% block content %}
-	<div class="page-header">
-    	<h1>Index</h1>
+	<div class="hero-unit" style="text-align: center;">
+    	<h1 class="text-center">Welcome to Career Builder!</h1>
+    	</br>
+    	<p>Keep track of what you've worked on at the OCIO. Did you make a rad webapp? Write a sweet function? Boost productivity by leveraging syneristic, impactful, game-changing ITSM strategies? Well you can totally document it right here! {% if not user.is_authenticated %} Don't have an account? <a href="/accounts/register">Create one here.</a></p>
+    	<a href="{% url login %}" class="btn btn-primary btn-large btn-success" style="float: none;">Login!</a> {% endif %}
+
 	</div>
 
 {% if userList %}
-    <ul>
-    {% for user in userList %}
-        <li><a href="{% url profile user.user.id %}">{{ user }}</a></li>
+	<h3>Look at all these awesome people!</h3>
+	<ul class="thumbnails">
+	<div class="row-fluid">
+	{% for user in userList %}
+	    {% if forloop.counter0|divisibleby:4 %}
+	    	</div>
+	   		</ul>
+	    	<ul class="thumbnails">
+	    	<div class="row-fluid" style="text-align: center;">
+	    {% endif %}
+				<li class="span3">
+					<div class="thumbnail">
+						<a href="{% url profile user.user.id %}">
+						{% if user.image %}
+						<img src="{{ user.image.url }}" alt="{{ user }}" class="img-rounded" style="width: 270px; height: 210px;">
+						{% else %}
+						<img src="Media/Images/default.jpg" alt="{{ user }}" class="img-rounded" style="width: 270px; height: 210px;">
+						{% endif %}
+						<h4 class="text-center">{{ user }}</h4></a>
+					</div>
+				</li>
     {% endfor %}
-    </ul>
+	</div>
+	</ul>
 {% else %}
     <p>No users available.</p>
 {% endif %}

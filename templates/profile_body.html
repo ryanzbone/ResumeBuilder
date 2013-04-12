@@ -1,4 +1,4 @@
-<div class="span9">
+<div class="span9 offset3">
 	{% if projects %}
 		<h3>Project{{ projects|pluralize }}</h3>
 		{% for project in projects %}
@@ -86,10 +86,15 @@
 		{% endfor %}
 	{% endif %}
 
-	{% if userProfile.altInfo %}
+	
 		<h3>Other Information</h3>
-		<p>{{ userProfile.altInfo }}</p>
-	{% endif %}
+		<p>{% if userProfile.altInfo %}{{ userProfile.altInfo }}{% endif %}</p>
+		{% if userProfile.altPhone %}Alternate Phone: {{ userProfile.altPhone }}</br>{% endif %}
+		{% if userProfile.school %}School: {{ userProfile.school }}</br>{% endif %}
+		{% if userProfile.degree %}Degree: {{ userProfile.degree }}</br>{% endif %}
+		{% if userProfile.altDegree %}Alternate Degree: {{ userProfile.altDegree }}</br>{% endif %}
+
+	
 	{% if userProfile.clients %}
 		<h3>Clients</h3>
 		<p>{{ userProfile.clients }}</p>

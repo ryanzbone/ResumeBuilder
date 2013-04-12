@@ -15,13 +15,6 @@ from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Preformatted
 from reportlab.lib.styles import getSampleStyleSheet
 
-# Used for exporting docx
-from docx import *
-
-
-
-
-
 # Dictionaries used for adding and editing information through forms
 models = { 
 	'work': 		WorkExperience,

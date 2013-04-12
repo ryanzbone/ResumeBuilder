@@ -107,49 +107,14 @@ def profile(request, userId):
 	code = CodeSnippet.objects.filter(user=userProfile)
 	return render(request, 'profile.html', locals())
 
-def search(request):
-	errors = []
-	if 'q' in request.GET:
-		q = request.GET['q']
-		if not q:
-			errors.append('Enter a search term.')
-		elif len(q) > 20:
-			errors.append('Please enter at most 20 characters.')
-		else:
-			projects = Project.objects.filter(title__icontains=q)
-			return render_to_response('search_results.html', 
-				{'projects': projects, 'query': q})
-	return render_to_response('search_form.html', {'errors': errors})
-
-def contact(request):
-	if request.method == 'POST':
-		form = ContactForm(request.POST)
-		if form.is_valid():
-			cd = form.cleaned_data
-			send_mail(
-				cd['subject'],
-				cd['message'],
-				cd.get('email', 'noreply@example.com'),
-				['ryanzbone@gmail.com'],
-			)
-			return HttpResponseRedirect('/contact/thanks')
-	else:
-		form = ContactForm(
-			initial={'subject': 'I love your site!'}
-		)
-	return render_to_response('contact_form.html', {'form': form}, context_instance=RequestContext(request))
-
-def thanks(request):
-	return render_to_response('thanks.html')
-
 # Exports a fileType file for a given userId
 def export_file(request, fileType, userId):
 	if fileType == 'txt':
 		response = export_txt(request, userId)
 	elif fileType == 'pdf':
 		response = export_pdf(request, userId)
-	elif fileType == 'doc':
-		response = export_doc(request, userId)
+	# elif fileType == 'doc':
+	# 	response = export_doc(request, userId)
 	else: 
 		raise Http404
 	return response
@@ -224,42 +189,42 @@ def userInfo(request, userId):
 		'code': code,
 		}
 
-def export_doc(request, userId):
-	info = userInfo(request, userId)
-	relationships = relationshiplist()
-	document = newdocument()
-	body = document.xpath('/w:document/w:body', namespaces=nsprefixes)[0]
+# def export_doc(request, userId):
+# 	info = userInfo(request, userId)
+# 	relationships = relationshiplist()
+# 	document = newdocument()
+# 	body = document.xpath('/w:document/w:body', namespaces=nsprefixes)[0]
 
-	body.append(paragraph(info['profileInfo']))
+# 	body.append(paragraph(info['profileInfo']))
 	
-	# for p in projectInfo:
-	# 	body.append(paragraph(p))
-	# for w in workInfo:
-	# 	body.append(paragraph(w))
-	# for v in volunteerInfo:
-	# 	body.append(paragraph(v))
+# 	# for p in projectInfo:
+# 	# 	body.append(paragraph(p))
+# 	# for w in workInfo:
+# 	# 	body.append(paragraph(w))
+# 	# for v in volunteerInfo:
+# 	# 	body.append(paragraph(v))
 
-	# Create our properties, contenttypes, and other support files
+# 	# Create our properties, contenttypes, and other support files
 
-	title    = 'Career Builder Resume'
-	subject  = 'Work done for the OCIO'
-	# creator  = info['userProfile'].firstName + ' ' + info['userProfile'].lastName
-	keywords = ['resume', 'ocio', 'career', 'work', 'project']
+# 	title    = 'Career Builder Resume'
+# 	subject  = 'Work done for the OCIO'
+# 	# creator  = info['userProfile'].firstName + ' ' + info['userProfile'].lastName
+# 	keywords = ['resume', 'ocio', 'career', 'work', 'project']
 
-	coreprops = coreproperties(title=title, subject=subject, creator='me', keywords=keywords)
+# 	coreprops = coreproperties(title=title, subject=subject, creator='me', keywords=keywords)
     
-	appprops = appproperties()
-	thecontenttypes = contenttypes()
-	thewebsettings = websettings()
-	thewordrelationships = wordrelationships(relationships)
+# 	appprops = appproperties()
+# 	thecontenttypes = contenttypes()
+# 	thewebsettings = websettings()
+# 	thewordrelationships = wordrelationships(relationships)
 
-    # Save our document
-	savedocx(document, coreprops, appprops, contenttypes, websettings, wordrelationships, 'Welcome to the Python docx module.docx')
+#     # Save our document
+# 	#savedocx(document, coreprops, appprops, contenttypes, websettings, wordrelationships, 'Career Builder Resume.docx')
 
-	response = HttpResponse(document, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-	response['Content-Disposition'] = 'attachment; filename="A Career Builder Resume.docx"'
+# 	response = HttpResponse(document, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+# 	response['Content-Disposition'] = 'attachment; filename="A Career Builder Resume.docx"'
 
-	return document
+# 	return response
 
 # Exports plain text file containg all information a user has entered into the app
 def export_txt(request, userId):

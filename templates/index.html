@@ -5,8 +5,10 @@
 	<div class="hero-unit" style="text-align: center;">
     	<h1 class="text-center">Welcome to Career Builder!</h1>
     	</br>
-    	<p>Keep track of what you've worked on at the OCIO. Did you make a rad webapp? Write a sweet function? Boost productivity by leveraging syneristic, impactful, game-changing ITSM strategies? Well you can totally document it right here! {% if not user.is_authenticated %} Don't have an account? <a href="/accounts/register">Create one here.</a></p>
-    	<a href="{% url login %}" class="btn btn-primary btn-large btn-success" style="float: none;">Login!</a> {% endif %}
+    	<p>Keep track of what you've worked on at the OCIO. Did you make a rad webapp? Write a sweet function? Boost productivity by leveraging syneristic, impactful, game-changing ITSM strategies? Well you can totally document it right here!</p>
+    	{% if not user.is_authenticated %}
+    	<a href="/accounts/register" class="btn btn-success btn-large" style="float:none;"><i class="icon-plus"></i> Register</a>
+    	<a href="{% url login %}" class="btn btn-primary btn-large" style="float: none;"><i class="icon-signin"></i> Login</a> {% endif %}
 
 	</div>
 

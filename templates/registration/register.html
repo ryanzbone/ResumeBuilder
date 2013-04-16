@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Project Tracker - Registration{% endblock %}
+{% block title %}Career Builder - Registration{% endblock %}
 
 {%block content%}
     <div class="container page-content">                       
@@ -10,7 +10,7 @@
 				<form action="" method="post">
 					{% csrf_token %}
 					{{ form.as_p }}
-					<input type="submit" value="Create Account" class="btn btn-primary">
+					<button type="submit" value="Create Account" class="btn btn-primary"><i class="icon-ok"></i> Create Account</button>
 				</form>
 			</div>
 		</div>

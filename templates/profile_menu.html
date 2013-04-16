@@ -8,24 +8,37 @@
 
 		</br>
 		</br>
-		{% if userProfile.email %}Email: <a href="mailto:{{ userProfile.email }}">{{ userProfile.email }}</a></br>{% endif %}
-		{% if userProfile.url %}Web: <a href="{{ userProfile.url }}">{{ userProfile.url }}</a></br>{% endif %}
-		{% if userProfile.phone %}Phone: {{ userProfile.phone }}</br></br>{% endif %}
+		{% if userProfile.email %}<i class="icon-envelope"></i> Email: <a href="mailto:{{ userProfile.email }}">{{ userProfile.email }}</a></br>{% endif %}
+		{% if userProfile.url %}<i class="icon-globe"></i> Web: <a href="{{ userProfile.url }}">{{ userProfile.url }}</a></br>{% endif %}
+		{% if userProfile.phone %}<i class="icon-phone"></i> Phone: {{ userProfile.phone }}</br></br>{% endif %}
 
 		{% if user.is_authenticated and isThisUser %}
-			<a href="{% url add_form 'project' %}" class="btn btn-large btn-block btn-danger" type="button" >+ Project</a>
-			<a href="{% url add_form 'code' %}" class="btn btn-large btn-block btn-danger" type="button" >+ Code Snippet</a>
-			<a href="{% url add_form 'work' %}" class="btn btn-large btn-block btn-danger" type="button">+ Work</a>
-			<a href="{% url add_form 'volunteer' %}" class="btn btn-large btn-block btn-danger" type="button">+ Volunteering</a>
-			<a href="{% url edit_form 'other' userProfile.user.id %}" class="btn btn-large btn-block btn-danger" type="button">+ Other Info</a>
-			<a class="btn dropdown-toggle btn-large btn-block" data-toggle="dropdown" style="position:relative;"href="#">
-		    	Export To
-		    	<span class="caret"></span>
-		  	</a>
-		  	<ul class="dropdown-menu">
-		    	<!-- dropdown menu links -->
-		    	<li><a href="{% url export 'pdf' userProfile.user.id %}">PDF</a></li>
-		    	<li><a href="{% url export 'txt' userProfile.user.id %}">Plain Text</a></li>
-		 	</ul>
+				<div class="btn-group" style="width:100%; padding-bottom: 5px;">
+					<a href="{% url edit_form 'other' userProfile.user.id %}" class="btn btn-large btn-block btn-danger" type="button"><i class="icon-edit"></i> Edit Other Info</a>
+				</div>
+				</br>
+				<div class="btn-group" style="width:100%; padding-bottom: 5px;">
+					<a class="btn dropdown-toggle btn-large btn-block btn-danger" data-toggle="dropdown" href="#">
+						<i class="icon-plus"></i> Add 
+					</a>
+					<ul class="dropdown-menu">
+						<li><a href="{% url add_form 'project' %}">Project</a></li>
+						<li><a href="{% url add_form 'code' %}">Code Snippet</a></li>
+						<li><a href="{% url add_form 'work' %}">Work</a></li>
+						<li><a href="{% url add_form 'volunteer' %}">Volunteering</a></li>
+					</ul>
+				</div>
+				</br>
+				<div class="btn-group" style="width:100%;">
+					<a class="btn dropdown-toggle btn-large btn-block" data-toggle="dropdown" style="width: 100%;" href="#">
+				    	<i class="icon-share"></i> Export To
+				  	</a>
+				  	<ul class="dropdown-menu">
+				    	<!-- dropdown menu links -->
+				    	<li><a href="{% url export 'pdf' userProfile.user.id %}">PDF</a></li>
+				    	<li><a href="{% url export 'txt' userProfile.user.id %}">Plain Text</a></li>
+				 	</ul>
+				 </div>
+					
 		{% endif %}
 </div>

@@ -14,9 +14,9 @@
 			<table>
 				{{ form.as_table }}
 			</table>
-			<input type="submit" value="Submit" class="btn">
+			<button type="submit" value="Submit" class="btn"><i class="icon-ok"></i> Submit </button>
 			{% if formId and formType != 'other' %}
-			<a href="{% url delete_request formType formFromId.id %}" class="btn btn-danger">Delete Entry</a>
+			<a href="{% url delete_request formType formFromId.id %}" class="btn btn-danger"><i class="icon-trash"></i> Delete Entry</a>
 			{% endif %}
 		</form>
 	</div>

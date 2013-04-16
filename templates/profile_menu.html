@@ -9,7 +9,7 @@
 		</br>
 		</br>
 		{% if userProfile.email %}Email: <a href="mailto:{{ userProfile.email }}">{{ userProfile.email }}</a></br>{% endif %}
-		{% if userProfile.url %}Website: <a href="{{ userProfile.url }}">{{ userProfile.url }}</a></br>{% endif %}
+		{% if userProfile.url %}Web: <a href="{{ userProfile.url }}">{{ userProfile.url }}</a></br>{% endif %}
 		{% if userProfile.phone %}Phone: {{ userProfile.phone }}</br></br>{% endif %}
 
 		{% if user.is_authenticated and isThisUser %}

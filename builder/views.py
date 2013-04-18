@@ -108,11 +108,28 @@ def profile(request, userId):
 		isThisUser = True
 	else: 
 		isThisUser = False
-	workExperience = WorkExperience.objects.filter(user=userProfile, visible=True)
-	projects = Project.objects.filter(user=userProfile, visible=True)
-	volunteerExperience = VolunteerExperience.objects.filter(user=userProfile, visible=True)
-	code = CodeSnippet.objects.filter(user=userProfile, visible=True)
+	workExperience = WorkExperience.objects.filter(user=userProfile, visible=True).order_by('-startDate')[:3]
+	projects = Project.objects.filter(user=userProfile, visible=True).order_by('-id')[:3]
+	volunteerExperience = VolunteerExperience.objects.filter(user=userProfile, visible=True).order_by('-startDate')[:3]
+	code = CodeSnippet.objects.filter(user=userProfile, visible=True).order_by('-id')[:3]
 	return render(request, 'profile.html', locals())
+
+def view_all(request, userId, entryType):
+	user = request.user
+	userProfile = UserProfile.objects.get(user=userId)
+
+	if user.id == userProfile.user.id: 
+		isThisUser = True
+	else: 
+		isThisUser = False
+	if entryType == 'code' or entryType == 'project':
+		order = '-id'
+	else:
+		order = '-startDate'
+	entries = models[entryType].objects.filter(user=userProfile, visible=True).order_by(order)
+
+	return render(request, 'view_all.html', locals())
+
 
 # Exports a fileType file for a given userId
 def export_file(request, fileType, userId):

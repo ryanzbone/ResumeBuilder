@@ -1,7 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ userProfile }} - Career Builder{% endblock %}
+{% block head %}
+
+<style type="text/css">
+h4 { display: inline; } ​
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid page-content">
+<div class="row-fluid">
+{% include "profile_menu.html" %}
 <div class="span9 offset3">
-	{% if projects %}
-		<h3 style="display:inline-block;">Project{{ projects|pluralize }}</h3><a href="{% url view_all userProfile.user.id 'project' %}" title="View all entries" style="float:right; margin:15px 0" class="btn">View All</a>
-		{% for project in projects %}
+
+	{% if entryType == "project" %}
+		<h3>Projects</h3>
+		{% for project in entries %}
 		<div class="well">
 			<h4>{% if project.projectURL %}<a href="{{ project.projectURL }}">{{ project.title }}</a>{% else %}{{ project.title }}{% endif %}
 			{% if project.isPublic %}<span class="label label-success pull-right" style="margin-left: 5px;">Is Public</span>{% endif %}
@@ -29,26 +44,12 @@
 		</div>
 		{% endfor %}
 	<hr>
-	{% endif %}
+	{% endif%}
 
-	{% if code %}
-		<h3 style="display:inline-block;">Code Snippets</h3><a href="{% url view_all userProfile.user.id "code" %}" title="View all entries" style="float:right; margin:15px 0" class="btn">View All</a></br>
-
-		{% for c in code %}
-		<h4>{{ c.title }}</h4>
-		<p>{{ c.description }}</p>
-		<pre>{{ c.code }}</pre>
-		{% if user.is_authenticated and isThisUser %}
-			<a href="{% url edit_form 'code' c.id %}" class="btn"><i class="icon-edit"></i> Edit</a>
-		{% endif %}
-		</br></br>
-		{% endfor %}
-	{% endif %}
-
-	{% if workExperience %}
-	<h3 style="display:inline-block;">Work Experience</h2><a href="{% url view_all userProfile.user.id "work" %}" title="View all entries" style="float:right; margin:15px 0" class="btn">View All</a>
-	</br>
-		{% for work in workExperience %}
+	{% if entryType == "work" %}
+		<h3>Work Experience</h2>
+		</br>
+		{% for work in entries %}
 		<h4>{{ work }} at {{ work.location }}</h4>
 		<ul>
 			<li>{{ work.startDate }} {% if work.endDate %} to {{work.endDate}}{% endif %}</li>
@@ -67,11 +68,11 @@
 		{% endif %}
 		{% endfor %}
 	<hr>
-	{% endif %}
-
-	{% if volunteerExperience %}
-	<h3 style="display:inline-block;"> Volunteer Experience</h3> <a href="{% url view_all userProfile.user.id "volunteer" %}" title="View all entries" style="float:right; margin:15px 0" class="btn">View All</a></br>
-		{% for vol in volunteerExperience %}
+	{% endif%}
+	
+	{% if entryType == "volunteer" %}
+		<h3> Volunteer Experience</h3>
+		{% for vol in entries %}
 		<h4>{{ vol.jobTitle }}{% if vol.organization %} with {{ vol.organization }}{% endif %}{% if vol.location %} in {{ vol.location }}{% endif %}</h4>
 		<ul>
 			<li>{{ vol.startDate }} {% if vol.endDate %} to {{vol.endDate}}{% endif %}</li>
@@ -86,27 +87,21 @@
 			</br></br>
 		{% endif %}
 		{% endfor %}
-	{% endif %}
+	{% endif%}
 
-	
-		<h3>Other Information</h3>
-		<p>{% if userProfile.altInfo %}{{ userProfile.altInfo }}{% endif %}</p>
-		{% if userProfile.altPhone %}Alternate Phone: {{ userProfile.altPhone }}</br>{% endif %}
-		{% if userProfile.school %}School: {{ userProfile.school }}</br>{% endif %}
-		{% if userProfile.degree %}Degree: {{ userProfile.degree }}</br>{% endif %}
-		{% if userProfile.altDegree %}Alternate Degree: {{ userProfile.altDegree }}</br>{% endif %}
-
-	
-	{% if userProfile.clients %}
-		<h3>Clients</h3>
-		<p>{{ userProfile.clients }}</p>
-	{% endif %}
-	{% if userProfile.hobbies %}
-		<h3>Hobbies</h3>
-		<p>{{ userProfile.hobbies }}</p>
-	{% endif %}
-	{% if userProfile.interests %}
-		<h3>Interests</h3>
-		<p>{{ userProfile.interests }}</p>
+	{% if entryType == "code" %}
+		<h3>Code Snippets</h3>
+		{% for c in entries %}
+		<h4>{{ c.title }}</h4>
+		<p>{{ c.description }}</p>
+		<pre>{{ c.code }}</pre>
+		{% if user.is_authenticated and isThisUser %}
+			<a href="{% url edit_form 'code' c.id %}" class="btn"><i class="icon-edit"></i> Edit</a>
+		{% endif %}
+		</br></br>
+		{% endfor %}
 	{% endif %}
 </div>
+</div>
+</div>
+{% endblock %}

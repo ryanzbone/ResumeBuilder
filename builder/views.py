@@ -64,11 +64,13 @@ def edit_form(request, formType, formId):
 
 	return render(request, 'experience_form.html', locals())
 
+# Renders page where a given entry may be deleted
 @login_required
 def delete_request(request, formType, formId):
 	entry = models[formType].objects.get(id=formId)
 	return render(request, 'delete.html', locals())
 
+# "Deletes" the entry by making it not visible on a profile
 @login_required
 def delete_confirm(request, formType, formId):
 	entry = models[formType].objects.get(id=formId)
@@ -80,6 +82,7 @@ def delete_confirm(request, formType, formId):
 
 	return HttpResponseRedirect('/profile/' + str(request.user.id))
 
+# Renders page for creating new user, rerenders page with already entered info if not everything is valid
 def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
@@ -129,7 +132,6 @@ def view_all(request, userId, entryType):
 	entries = models[entryType].objects.filter(user=userProfile, visible=True).order_by(order)
 
 	return render(request, 'view_all.html', locals())
-
 
 # Exports a fileType file for a given userId
 def export_file(request, fileType, userId):

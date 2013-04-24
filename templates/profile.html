@@ -16,4 +16,19 @@ h3 { display: inline-block;}
 
 </div>
 </div>
+
+<script>
+	$(window).on("resize", function() {
+		if ( $(window).width() <= 767) {
+		   $('#menu').css('position','');
+		   $('#menu').css('width','');
+		   $('#body').removeClass('offset3')
+		}
+		else {
+		   $('#menu').css('position','fixed');
+		   $('#menu').css('width','24%');
+		   $('#body').addClass('offset3')
+		}
+	}).resize();
+</script>
 {% endblock %}

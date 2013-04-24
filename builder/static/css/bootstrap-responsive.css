@@ -948,8 +948,8 @@
     position: static;
   }
 }
-
-@media (max-width: 979px) {
+/* Changed max-width from 979 to make nav bar collapse happen at a smaller window size */
+@media (max-width: 767px) {
   body {
     padding-top: 0;
   }
@@ -958,7 +958,7 @@
     position: static;
   }
   .navbar-fixed-top {
-    margin-bottom: 20px;
+    margin-bottom: 0px;
   }
   .navbar-fixed-bottom {
     margin-top: 20px;
@@ -1023,13 +1023,13 @@
   }
   .navbar-inverse .nav-collapse .nav > li > a,
   .navbar-inverse .nav-collapse .dropdown-menu a {
-    color: #999999;
+    color: #DBBFBF;
   }
   .navbar-inverse .nav-collapse .nav > li > a:hover,
   .navbar-inverse .nav-collapse .nav > li > a:focus,
   .navbar-inverse .nav-collapse .dropdown-menu a:hover,
   .navbar-inverse .nav-collapse .dropdown-menu a:focus {
-    background-color: #111111;
+    background-color: #4F0000;
   }
   .nav-collapse.in .btn-group {
     padding: 0;

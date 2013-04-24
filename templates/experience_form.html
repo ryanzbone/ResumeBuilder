@@ -7,6 +7,8 @@
 {% endblock %}
 
 {% block content %}
+<div class="container-fluid page-content">
+       <div class="row-fluid">
 	<div class="page-header">
     	<h1>{{ formType|capfirst }} Experience</h1>    	
 		<form action="" method="post">
@@ -20,7 +22,8 @@
 			{% endif %}
 		</form>
 	</div>
-
+</div>
+</div>
 <script src="{{ STATIC_URL }}js/jquery-ui-1.10.2.custom.js"></script>
 <script>
 	$(document).ready(function() {

@@ -230,7 +230,7 @@ def export_txt(request, userId):
 		response.write(u'WINDOWS')
 	else:
 		newline = '\n'
-
+	response.write(request.META['HTTP_USER_AGENT'])
 	response.write(newline.join(info['profileInfo']))
 	response.write((u'\n\nPROJECTS\n'))
 	response.write(newline.join(info['projectInfo']))

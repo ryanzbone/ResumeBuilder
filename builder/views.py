@@ -225,21 +225,24 @@ def export_txt(request, userId):
 	# Declare response to return as a plain text file named "Career Builder Resume.txt"
 	response = HttpResponse(content_type='text/plain')
 	response['Content-Disposition'] = 'attachment; filename="Career Builder Resume.txt"'
+	
+	# Uses different newline character if user is on windows
 	if "windows" in request.META['HTTP_USER_AGENT'].lower():
-		newline = '\r\n'
+		nl = '\r\n'
 		response.write(u'WINDOWS')
 	else:
-		newline = '\n'
-	response.write(request.META['HTTP_USER_AGENT'])
-	response.write(newline.join(info['profileInfo']))
-	response.write((u'\n\nPROJECTS\n'))
-	response.write(newline.join(info['projectInfo']))
-	response.write((u'\n\nCODE\n'))
-	response.write(newline.join(info['code']))
-	response.write((u'\n\nWORK HISTORY\n'))
-	response.write(newline.join(info['workInfo']))
-	response.write((u'\n\nVOLUNTEERING\n'))
-	response.write(newline.join(info['volunteerInfo']))
+		nl = '\n'
+
+	# Write info to response
+	response.write(nl.join(info['profileInfo']))
+	response.write((nl + nl + u'PROJECTS' + nl))
+	response.write(nl.join(info['projectInfo']))
+	response.write((nl + nl + u'CODE' + nl))
+	response.write(nl.join(info['code']))
+	response.write((nl + nl + u'WORK HISTORY' + nl))
+	response.write(nl.join(info['workInfo']))
+	response.write((nl + nl + u'VOLUNTEERING' + nl))
+	response.write(nl.join(info['volunteerInfo']))
 
 	return response
 

@@ -225,7 +225,7 @@ def export_txt(request, userId):
 	# Declare response to return as a plain text file named "Career Builder Resume.txt"
 	response = HttpResponse(content_type='text/plain')
 	response['Content-Disposition'] = 'attachment; filename="Career Builder Resume.txt"'
-	if "windows" in request.META.HTTP_USER_AGENT:
+	if "windows" in request.META['HTTP_USER_AGENT']:
 		newline = '\r\n'
 	else:
 		newline = '\n'

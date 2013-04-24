@@ -227,8 +227,10 @@ def export_txt(request, userId):
 	response['Content-Disposition'] = 'attachment; filename="Career Builder Resume.txt"'
 	if "windows" in request.META['HTTP_USER_AGENT']:
 		newline = '\r\n'
+		response.write(u'WINDOWS')
 	else:
 		newline = '\n'
+
 	response.write(newline.join(info['profileInfo']))
 	response.write((u'\n\nPROJECTS\n'))
 	response.write(newline.join(info['projectInfo']))

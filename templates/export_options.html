@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ userProfile }} - Career Builder{% endblock %}
+{% block head %}
+<script>
+	function checkAllProjects() {
+		var bool;
+		if(document.getElementById('allprojects').checked == true){
+			bool = true;
+		} else{
+			bool = false;
+		}
+
+		var boxes = document.getElementsByName('project')
+		for(var i = 0; i < boxes.length; i++) {
+			boxes[i].checked = bool;
+		}
+	}
+</script>
+
+<style type="text/css">
+h4 { display: inline; } ​
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid page-content">
+<div class="row-fluid">
+{% include "profile_menu.html" %}
+<div class="span9" id="body">
+	<h2>Export options</h2>
+	<p>Select what you want to export</p>
+
+	<form>
+		<label class="checkbox">
+  			<input type="checkbox" value="" id="allprojects" onclick="checkAllProjects()">All Projects
+  		</label>
+  		{% for project in projects %}
+  		<label class="checkbox project">
+  			<input type="checkbox" name="project" value="{{forloop.counter}}">{{ project }}
+  		</label>
+  		{% endfor %}
+  	</form>
+
+
+
+
+{% endblock %}

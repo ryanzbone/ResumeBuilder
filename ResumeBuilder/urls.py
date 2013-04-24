@@ -19,6 +19,7 @@ urlpatterns = patterns('builder.views',
     url(r'^accounts/login/$',  login, name='login'),
     url(r'^accounts/logout/$', logout, {'next_page': '/'}, name='logout'),
     url(r'^accounts/register/$', 'register', name='register'),
+    url(r'^export/options/(?P<userId>\d+)/$', 'export_options', name='export_options'),
     url(r'^export/(?P<fileType>[^/]+)/(?P<userId>\d+)/$', 'export_file', name='export'),
 )
 if settings.DEBUG:

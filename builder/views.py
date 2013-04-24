@@ -117,6 +117,16 @@ def profile(request, userId):
 	code = CodeSnippet.objects.filter(user=userProfile, visible=True).order_by('-id')[:3]
 	return render(request, 'profile.html', locals())
 
+def export_options(request, userId):
+	user = request.user
+	userProfile = UserProfile.objects.get(user=userId)
+	workExperience = WorkExperience.objects.filter(user=userProfile, visible=True).order_by('-startDate')
+	projects = Project.objects.filter(user=userProfile, visible=True).order_by('-id')
+	volunteerExperience = VolunteerExperience.objects.filter(user=userProfile, visible=True).order_by('-startDate')
+	code = CodeSnippet.objects.filter(user=userProfile, visible=True).order_by('-id')
+	
+	return render(request, 'export_options.html', locals())
+
 def view_all(request, userId, entryType):
 	user = request.user
 	userProfile = UserProfile.objects.get(user=userId)
@@ -136,15 +146,17 @@ def view_all(request, userId, entryType):
 # Exports a fileType file for a given userId
 @login_required
 def export_file(request, fileType, userId):
-	if fileType == 'txt':
-		response = export_txt(request, userId)
-	elif fileType == 'pdf':
-		response = export_pdf(request, userId)
-	# elif fileType == 'doc':
-	# 	response = export_doc(request, userId)
-	else: 
-		raise Http404
-	return response
+	# Users can only export their own data
+	if UserProfile.objects.get(user=userId).user.id == request.user.id:
+		if fileType == 'txt':
+			response = export_txt(request, userId)
+		elif fileType == 'pdf':
+			response = export_pdf(request, userId)
+		else: 
+			raise Http404
+		return response
+	else:
+		return HttpResponseRedirect('/profile/' + userId)
 
 # returns dictionary of user information
 def userInfo(request, userId):
@@ -229,7 +241,6 @@ def export_txt(request, userId):
 	# Uses different newline character if user is on windows
 	if "windows" in request.META['HTTP_USER_AGENT'].lower():
 		nl = '\r\n'
-		response.write(u'WINDOWS')
 	else:
 		nl = '\n'
 

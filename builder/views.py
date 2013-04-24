@@ -134,6 +134,7 @@ def view_all(request, userId, entryType):
 	return render(request, 'view_all.html', locals())
 
 # Exports a fileType file for a given userId
+@login_required
 def export_file(request, fileType, userId):
 	if fileType == 'txt':
 		response = export_txt(request, userId)
@@ -215,44 +216,8 @@ def userInfo(request, userId):
 		'code': code,
 		}
 
-# def export_doc(request, userId):
-# 	info = userInfo(request, userId)
-# 	relationships = relationshiplist()
-# 	document = newdocument()
-# 	body = document.xpath('/w:document/w:body', namespaces=nsprefixes)[0]
-
-# 	body.append(paragraph(info['profileInfo']))
-	
-# 	# for p in projectInfo:
-# 	# 	body.append(paragraph(p))
-# 	# for w in workInfo:
-# 	# 	body.append(paragraph(w))
-# 	# for v in volunteerInfo:
-# 	# 	body.append(paragraph(v))
-
-# 	# Create our properties, contenttypes, and other support files
-
-# 	title    = 'Career Builder Resume'
-# 	subject  = 'Work done for the OCIO'
-# 	# creator  = info['userProfile'].firstName + ' ' + info['userProfile'].lastName
-# 	keywords = ['resume', 'ocio', 'career', 'work', 'project']
-
-# 	coreprops = coreproperties(title=title, subject=subject, creator='me', keywords=keywords)
-    
-# 	appprops = appproperties()
-# 	thecontenttypes = contenttypes()
-# 	thewebsettings = websettings()
-# 	thewordrelationships = wordrelationships(relationships)
-
-#     # Save our document
-# 	#savedocx(document, coreprops, appprops, contenttypes, websettings, wordrelationships, 'Career Builder Resume.docx')
-
-# 	response = HttpResponse(document, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-# 	response['Content-Disposition'] = 'attachment; filename="A Career Builder Resume.docx"'
-
-# 	return response
-
 # Exports plain text file containg all information a user has entered into the app
+@login_required
 def export_txt(request, userId):
 	# gets dictionary of user information
 	info = userInfo(request, userId)
@@ -260,19 +225,24 @@ def export_txt(request, userId):
 	# Declare response to return as a plain text file named "Career Builder Resume.txt"
 	response = HttpResponse(content_type='text/plain')
 	response['Content-Disposition'] = 'attachment; filename="Career Builder Resume.txt"'
-	
-	response.write('\n'.join(info['profileInfo']))
+	if "windows" in request.META.HTTP_USER_AGENT:
+		newline = '\r\n'
+	else:
+		newline = '\n'
+	response.write(newline.join(info['profileInfo']))
 	response.write((u'\n\nPROJECTS\n'))
-	response.write('\n'.join(info['projectInfo']))
+	response.write(newline.join(info['projectInfo']))
 	response.write((u'\n\nCODE\n'))
-	response.write('\n'.join(info['code']))
+	response.write(newline.join(info['code']))
 	response.write((u'\n\nWORK HISTORY\n'))
-	response.write('\n'.join(info['workInfo']))
+	response.write(newline.join(info['workInfo']))
 	response.write((u'\n\nVOLUNTEERING\n'))
-	response.write('\n'.join(info['volunteerInfo']))
+	response.write(newline.join(info['volunteerInfo']))
 
 	return response
 
+# Exports PDF containing all infomation a user has entered into the app
+@login_required
 def export_pdf (request, userId):
 	# Get info to print
 	info = userInfo(request, userId)

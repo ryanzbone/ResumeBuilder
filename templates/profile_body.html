@@ -1,39 +1,44 @@
 <div class="span9" id="body">
-	{% if projects %}
-		<h3 style="display:inline-block;">Project{{ projects|pluralize }}</h3><a href="{% url view_all userProfile.user.id 'project' %}" title="View all entries" style="float:right; margin:15px 0" class="btn">View All</a>
-		{% for project in projects %}
+</br>
+	<ul class="nav nav-tabs">
+  		{% if project %}<li {% if section == 'project' %} class="active" {% endif %}><a href="{% url profile_section userProfile.user.id 'project' %}"><h4>Projects</h4></a></li>{% endif %}
+  		{% if code %}<li{% if section == 'code' %} class="active" {% endif %}><a href="{% url profile_section userProfile.user.id 'code' %}"><h4>Code Snippets</h4></a></li>{% endif %}
+  		{% if work %}<li{% if section == 'work' %} class="active" {% endif %}><a href="{% url profile_section userProfile.user.id 'work' %}"><h4>Work Experience</h4></a></li>{% endif %}
+  		{% if volunteer %}<li{% if section == 'volunteer' %} class="active" {% endif %}><a href="{% url profile_section userProfile.user.id 'volunteer' %}"><h4>Volunteering</h4></a></li>{% endif %}
+  		<li{% if section == 'other' %} class="active" {% endif %}><a href="{% url profile_section userProfile.user.id 'other' %}"><h4>Other</h4></a></li>
+  	</ul>
+
+	{% if section == 'project' %}
+		{% for proj in project %}
 		<div class="well">
-			<h4>{% if project.projectURL %}<a href="{{ project.projectURL }}">{{ project.title }}</a>{% else %}{{ project.title }}{% endif %}
-			{% if project.isPublic %}<span class="label label-success pull-right" style="margin-left: 5px;">Is Public</span>{% endif %}
-			{% if project.inDevelopment %}<span class="label label-warning pull-right">In Development</span>{% endif %}
+			<h4>{% if proj.projectURL %}<a href="{{ proj.projectURL }}">{{ proj.title }}</a>{% else %}{{ proj.title }}{% endif %}
+			{% if proj.isPublic %}<span class="label label-success pull-right" style="margin-left: 5px;">Is Public</span>{% endif %}
+			{% if proj.inDevelopment %}<span class="label label-warning pull-right">In Development</span>{% endif %}
 			</h4>
-			{% if project.projectImage %}
+			{% if proj.projectImage %}
 			<div class="row-fluid">
 				<div class="span9">
-					<p><br/>{{ project.description }}</p>
+					<p><br/>{{ proj.description }}</p>
 				</div>
 				<ul class="thumbnails">
 					<li class="span3 pull-right">
-						<a href="{{ project.projectImage.url }}" class="thumbnail" style="margin-top:10px">
-							<img src="{{ project.projectImage.url }}" alt="">
+						<a href="{{ proj.projectImage.url }}" class="thumbnail" style="margin-top:10px">
+							<img src="{{ proj.projectImage.url }}" alt="">
 						</a>
 					</li>
 				</ul>
 			</div>
 			{% else %}
-				<p><br/>{{ project.description }}</p>
+				<p><br/>{{ proj.description }}</p>
 			{% endif %}
 			{% if user.is_authenticated and isThisUser %}
-				<a href="{% url edit_form 'project' project.id %}" class="btn"><i class="icon-edit"></i> Edit</a>
+				<a href="{% url edit_form 'project' proj.id %}" class="btn"><i class="icon-edit"></i> Edit</a>
 			{% endif %}
 		</div>
 		{% endfor %}
-	<hr>
 	{% endif %}
 
-	{% if code %}
-		<h3 style="display:inline-block;">Code Snippets</h3><a href="{% url view_all userProfile.user.id "code" %}" title="View all entries" style="float:right; margin:15px 0" class="btn">View All</a></br>
-
+	{% if section == 'code' %}
 		{% for c in code %}
 		<h4>{{ c.title }}</h4>
 		<p>{{ c.description }}</p>
@@ -45,33 +50,30 @@
 		{% endfor %}
 	{% endif %}
 
-	{% if workExperience %}
-	<h3 style="display:inline-block;">Work Experience</h2><a href="{% url view_all userProfile.user.id "work" %}" title="View all entries" style="float:right; margin:15px 0" class="btn">View All</a>
-	</br>
-		{% for work in workExperience %}
-		<h4>{{ work }} at {{ work.location }}</h4>
+	{% if section == 'work' %}
+	
+		{% for w in work %}
+		<h4>{{ w }} at {{ w.location }}</h4>
 		<ul>
-			<li>{{ work.startDate }} {% if work.endDate %} to {{work.endDate}}{% endif %}</li>
-			<li>{{ work.description }}</li>
-			{% if work.supervisorName or work.supervisorEmail %}
+			<li>{{ w.startDate }} {% if w.endDate %} to {{w.endDate}}{% endif %}</li>
+			<li>{{ w.description }}</li>
+			{% if w.supervisorName or w.supervisorEmail %}
 			<li>Supervisor</li>
 			<ul>
-				{% if work.supervisorName %}<li>{{ work.supervisorName }}</li>{% endif %}
-				{% if work.supervisorEmail %}<li>{{ work.supervisorEmail }}</li>{% endif %}
+				{% if w.supervisorName %}<li>{{ w.supervisorName }}</li>{% endif %}
+				{% if w.supervisorEmail %}<li>{{ w.supervisorEmail }}</li>{% endif %}
 			</ul>
 			{% endif %}
 		</ul>
 		{% if user.is_authenticated and isThisUser %}
-			<a href="{% url edit_form 'work' work.id %}" class="btn"><i class="icon-edit"></i> Edit</a>
+			<a href="{% url edit_form 'work' w.id %}" class="btn"><i class="icon-edit"></i> Edit</a>
 		</br></br>
 		{% endif %}
 		{% endfor %}
-	<hr>
 	{% endif %}
 
-	{% if volunteerExperience %}
-	<h3 style="display:inline-block;"> Volunteer Experience</h3> <a href="{% url view_all userProfile.user.id "volunteer" %}" title="View all entries" style="float:right; margin:15px 0" class="btn">View All</a></br>
-		{% for vol in volunteerExperience %}
+	{% if section == 'volunteer' %}
+		{% for vol in volunteer %}
 		<h4>{{ vol.jobTitle }}{% if vol.organization %} with {{ vol.organization }}{% endif %}{% if vol.location %} in {{ vol.location }}{% endif %}</h4>
 		<ul>
 			<li>{{ vol.startDate }} {% if vol.endDate %} to {{vol.endDate}}{% endif %}</li>
@@ -88,25 +90,25 @@
 		{% endfor %}
 	{% endif %}
 
-	
-		<h3>Other Information</h3>
+	{% if section == 'other' %}	
 		<p>{% if userProfile.altInfo %}{{ userProfile.altInfo }}{% endif %}</p>
 		{% if userProfile.altPhone %}Alternate Phone: {{ userProfile.altPhone }}</br>{% endif %}
 		{% if userProfile.school %}School: {{ userProfile.school }}</br>{% endif %}
 		{% if userProfile.degree %}Degree: {{ userProfile.degree }}</br>{% endif %}
 		{% if userProfile.altDegree %}Alternate Degree: {{ userProfile.altDegree }}</br>{% endif %}
 
-	
-	{% if userProfile.clients %}
-		<h3>Clients</h3>
-		<p>{{ userProfile.clients }}</p>
-	{% endif %}
-	{% if userProfile.hobbies %}
-		<h3>Hobbies</h3>
-		<p>{{ userProfile.hobbies }}</p>
-	{% endif %}
-	{% if userProfile.interests %}
-		<h3>Interests</h3>
-		<p>{{ userProfile.interests }}</p>
+		
+		{% if userProfile.clients %}
+			<h3>Clients</h3>
+			<p>{{ userProfile.clients }}</p>
+		{% endif %}
+		{% if userProfile.hobbies %}
+			<h3>Hobbies</h3>
+			<p>{{ userProfile.hobbies }}</p>
+		{% endif %}
+		{% if userProfile.interests %}
+			<h3>Interests</h3>
+			<p>{{ userProfile.interests }}</p>
+		{% endif %}
 	{% endif %}
 </div>

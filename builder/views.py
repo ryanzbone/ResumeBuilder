@@ -31,7 +31,44 @@ forms = {
 	'code':			CodeSnippetForm,
 	}
 
-# Creates formType form for adding new information
+# Renders list of user profiles
+def index(request):
+	userList = UserProfile.objects.filter(visible=True,).order_by('lastName')
+	return render(request, 'index.html', {'userList': userList})
+
+# Renders page for creating new user, rerenders page with already entered info if not everything is valid
+def register(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            new_user = form.save()
+            new_profile = UserProfile(firstName=new_user.first_name.capitalize(), lastName=new_user.last_name.capitalize(), user=new_user, email=new_user.email)
+            new_profile.save()
+            new_user = authenticate(username=request.POST['username'], password=request.POST['password1'])
+            login(request, new_user)
+
+            return HttpResponseRedirect("/form/edit/other/" + str(new_user.id))
+    else:
+        form = RegistrationForm()
+    return render(request, 'registration/register.html', locals())
+
+# Renders profile section for userId
+def profile_section(request, userId, section):
+	user = request.user
+	userProfile = UserProfile.objects.get(user=userId)
+	if user.id == userProfile.user.id: 
+		isThisUser = True
+	else: 
+		isThisUser = False
+	work = WorkExperience.objects.filter(user=userProfile, visible=True).order_by('-startDate')
+	project = Project.objects.filter(user=userProfile, visible=True).order_by('-id')
+	volunteer = VolunteerExperience.objects.filter(user=userProfile, visible=True).order_by('-startDate')
+	code = CodeSnippet.objects.filter(user=userProfile, visible=True).order_by('-id')
+	if section == 'other':
+		other = True # used to show other information
+	return render(request, 'profile.html', locals())
+
+	# Creates formType form for adding new information
 @login_required
 def add_form(request, formType):
 	exp = models[formType](user=UserProfile.objects.get(user=request.user))
@@ -39,7 +76,7 @@ def add_form(request, formType):
 		form = forms[formType](request.POST, request.FILES, instance = exp)
 		if form.is_valid():
 			form.save()
-			redirect = '/profile/' + str(request.user.id)
+			redirect = '/profile/' + str(request.user.id) + '/' + formType
 			return HttpResponseRedirect(redirect)
 	else:
 		form = forms[formType]
@@ -57,7 +94,7 @@ def edit_form(request, formType, formId):
 		form = forms[formType](request.POST, request.FILES, instance=formFromId)
 		if form.is_valid():
 			form.save()
-			redirect = '/profile/' + str(request.user.id)
+			redirect = '/profile/' + str(request.user.id) + '/' + formType
 			return HttpResponseRedirect(redirect)
 	else:
 		form = forms[formType](instance=formFromId)
@@ -80,68 +117,7 @@ def delete_confirm(request, formType, formId):
 	else:
 		raise Http404 # User is trying to delete something that's already been deleted
 
-	return HttpResponseRedirect('/profile/' + str(request.user.id))
-
-# Renders page for creating new user, rerenders page with already entered info if not everything is valid
-def register(request):
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            new_user = form.save()
-            new_profile = UserProfile(firstName=new_user.first_name.capitalize(), lastName=new_user.last_name.capitalize(), user=new_user, email=new_user.email)
-            new_profile.save()
-            new_user = authenticate(username=request.POST['username'], password=request.POST['password1'])
-            login(request, new_user)
-
-            return HttpResponseRedirect("/form/edit/other/" + str(new_user.id))
-    else:
-        form = RegistrationForm()
-    return render(request, 'registration/register.html', locals())
-
-# Renders list of user profiles
-def index(request):
-	userList = UserProfile.objects.filter(visible=True,).order_by('lastName')
-	return render(request, 'index.html', {'userList': userList})
-
-# Renders profile page for userId
-def profile(request, userId):
-	user = request.user
-	userProfile = UserProfile.objects.get(user=userId)
-	if user.id == userProfile.user.id: 
-		isThisUser = True
-	else: 
-		isThisUser = False
-	workExperience = WorkExperience.objects.filter(user=userProfile, visible=True).order_by('-startDate')[:3]
-	projects = Project.objects.filter(user=userProfile, visible=True).order_by('-id')[:3]
-	volunteerExperience = VolunteerExperience.objects.filter(user=userProfile, visible=True).order_by('-startDate')[:3]
-	code = CodeSnippet.objects.filter(user=userProfile, visible=True).order_by('-id')[:3]
-	return render(request, 'profile.html', locals())
-
-def export_options(request, userId):
-	user = request.user
-	userProfile = UserProfile.objects.get(user=userId)
-	workExperience = WorkExperience.objects.filter(user=userProfile, visible=True).order_by('-startDate')
-	projects = Project.objects.filter(user=userProfile, visible=True).order_by('-id')
-	volunteerExperience = VolunteerExperience.objects.filter(user=userProfile, visible=True).order_by('-startDate')
-	code = CodeSnippet.objects.filter(user=userProfile, visible=True).order_by('-id')
-	
-	return render(request, 'export_options.html', locals())
-
-def view_all(request, userId, entryType):
-	user = request.user
-	userProfile = UserProfile.objects.get(user=userId)
-
-	if user.id == userProfile.user.id: 
-		isThisUser = True
-	else: 
-		isThisUser = False
-	if entryType == 'code' or entryType == 'project':
-		order = '-id'
-	else:
-		order = '-startDate'
-	entries = models[entryType].objects.filter(user=userProfile, visible=True).order_by(order)
-
-	return render(request, 'view_all.html', locals())
+	return HttpResponseRedirect('/profile/' + str(request.user.id) + '/project')
 
 # Exports a fileType file for a given userId
 @login_required
@@ -156,9 +132,10 @@ def export_file(request, fileType, userId):
 			raise Http404
 		return response
 	else:
-		return HttpResponseRedirect('/profile/' + userId)
+		return HttpResponseRedirect('/profile/' + userId + '/project')
 
-# returns dictionary of user information
+# returns dictionary of user information, used in exports
+@login_required
 def userInfo(request, userId):
 	userProfile = UserProfile.objects.get(user=userId)
 
@@ -337,3 +314,15 @@ def export_pdf (request, userId):
 	response.write(pdf)
 
 	return response
+
+# Work in progress, allows for custom export of data
+@login_required
+def export_options(request, userId):
+	user = request.user
+	userProfile = UserProfile.objects.get(user=userId)
+	workExperience = WorkExperience.objects.filter(user=userProfile, visible=True).order_by('-startDate')
+	projects = Project.objects.filter(user=userProfile, visible=True).order_by('-id')
+	volunteerExperience = VolunteerExperience.objects.filter(user=userProfile, visible=True).order_by('-startDate')
+	code = CodeSnippet.objects.filter(user=userProfile, visible=True).order_by('-id')
+	
+	return render(request, 'export_options.html', locals())

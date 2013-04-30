@@ -5,6 +5,6 @@
 	</br>
 	<p>If you delete this entry and later want it back, contact an administrator.</p>
 	<a href="{% url delete_confirm formType formId %}" class="btn btn-danger">Delete</a>
-	<a href="{% url profile user.id %}" class="btn">Cancel</a>
+	<a href="{% url profile_section user.id 'project' %}" class="btn">Cancel</a>
 </div>
 {% endblock %}

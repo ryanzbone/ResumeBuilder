@@ -29,7 +29,7 @@
 	    {% endif %}
 				<li class="span3">
 					<div class="thumbnail">
-						<a href="{% url profile user.user.id %}">
+						<a href="{% url profile_section user.user.id 'projects'%}">
 						{% if user.image %}
 						<img src="{{ user.image.url }}" alt="{{ user }}" class="img-rounded" style="width: 270px; height: 210px;">
 						{% else %}

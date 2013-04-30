@@ -38,7 +38,7 @@
                 <div class="nav-collapse collapse">
                     <ul class="nav">
                         {% if user.is_authenticated %}
-                            <li><a href="{% url profile user.id %}"><i class="icon-user"></i> Profile</a></li>
+                            <li><a href="{% url profile_section user.id 'projects' %}"><i class="icon-user"></i> Profile</a></li>
                             {% if user.is_staff %}
                             <li><a href="/admin"><i class="icon-wrench"></i> Administration</a></li>
                             {% endif %}

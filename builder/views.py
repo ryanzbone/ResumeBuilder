@@ -36,7 +36,7 @@ forms = {
 def add_form(request, formType):
 	exp = models[formType](user=UserProfile.objects.get(user=request.user))
 	if request.method == 'POST':
-		form = forms[formType](request.POST, instance = exp)
+		form = forms[formType](request.POST, request.FILES, instance = exp)
 		if form.is_valid():
 			form.save()
 			redirect = '/profile/' + str(request.user.id)
@@ -54,7 +54,7 @@ def edit_form(request, formType, formId):
 	else:
 		formFromId = models[formType].objects.get(id=formId)
 	if request.method == 'POST':
-		form = forms[formType](request.POST, instance=formFromId)
+		form = forms[formType](request.POST, request.FILES, instance=formFromId)
 		if form.is_valid():
 			form.save()
 			redirect = '/profile/' + str(request.user.id)
